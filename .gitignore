@@ -1993,7 +1993,6 @@
 /build/tmp/instrumentedJar/MANIFEST.MF
 /build/tmp/jar/MANIFEST.MF
 /gradle/wrapper/gradle-wrapper.jar
-/gradle/wrapper/gradle-wrapper.properties
 /.gradle/8.5/checksums/checksums.lock
 /.gradle/8.5/checksums/md5-checksums.bin
 /.gradle/8.5/checksums/sha1-checksums.bin
