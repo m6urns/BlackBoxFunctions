@@ -55,6 +55,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       contentPanel.add(submittedTextScrollPane, constraints);
     }
 
+    // TODO: Get the cursor position correct here. Maybe a border issue?
     @NotNull
     private JPanel createTextBoxPanel() {
       JPanel textBoxPanel = new JPanel(new GridBagLayout());
@@ -105,16 +106,22 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       String codeDef = processedChoice.getDef();
       String codeContent = processedChoice.getCode();
       String rawResponse = processedChoice.getRaw();
-
+      // TODO: Add the option to delete a function from the library
       if (codeDef.isEmpty() && codeContent.isEmpty()) {
         System.out.println("Error: " + rawResponse);
         addSubmittedTextBox("Error: " + rawResponse);
       } else {
+        // Work on passing code and prompt to FunctionManager, for logging in show your work
         FunctionManager.writeToLibrary(project, codeContent);
         addSubmittedTextBox("Generated code definition:\n" + codeDef);
       }
     }
 
+    // TODO: Refine the submitted box so that it looks nicer on the new PyCharm theme
+    // Maybe a different colored background or something like that, rounded corners?
+    // Will need to add a delete button and maybe a little recall button to each
+    // Prompt. Maybe combine the prompt and function boxes. Or do we just need
+    // function definitions?
     private void addSubmittedTextBox(String text) {
       JTextArea submittedTextArea = new JTextArea(text);
       submittedTextArea.setLineWrap(true);
