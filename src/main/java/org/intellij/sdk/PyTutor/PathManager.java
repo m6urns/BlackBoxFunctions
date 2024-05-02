@@ -7,22 +7,25 @@ import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.jetbrains.python.run.PythonRunConfiguration;
+import org.jetbrains.annotations.NotNull;
+import com.intellij.execution.RunnerAndConfigurationSettings;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class PathManager {
-    private static final String PLUGIN_DIR_NAME = ".pytutor";
-    private static final String LIBRARY_FILE_NAME = "generated_functions.py";
+    public static final String FUNCTION_MANAGER_FILE_NAME = "generated_functions.py";
+    public static final String PLUGIN_DIR_NAME = ".pytutor";
 
-    public static Path getLibraryPath() {
-        String userHome = System.getProperty("user.home");
-        return Paths.get(userHome, PLUGIN_DIR_NAME, LIBRARY_FILE_NAME);
-    }
-
-    public static String getPluginDirPath() {
-        return getLibraryPath().getParent().toString();
+    public static Path getPluginDirPath(Project project) {
+        VirtualFile baseDir = project.getBaseDir();
+        if (baseDir != null) {
+            return Paths.get(baseDir.getPath(), PLUGIN_DIR_NAME);
+        } else {
+            throw new IllegalStateException("Project base directory not found for project: " + project.getName());
+        }
     }
 
     public static void addPluginDirToPythonPath(Project project) {
@@ -30,7 +33,7 @@ public class PathManager {
         if (pythonSdk != null) {
             ApplicationManager.getApplication().runWriteAction(() -> {
                 SdkModificator sdkModificator = pythonSdk.getSdkModificator();
-                String pluginDirPath = getPluginDirPath();
+                String pluginDirPath = getPluginDirPath(project).toString();
                 VirtualFile pluginVirtualFile = com.intellij.openapi.vfs.LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(pluginDirPath));
 
                 if (pluginVirtualFile != null) {
@@ -53,6 +56,17 @@ public class PathManager {
             });
         } else {
             System.err.println("Python SDK not found for the project.");
+        }
+    }
+
+    public static void updatePythonPath(@NotNull RunnerAndConfigurationSettings settings) {
+        if (settings.getConfiguration() instanceof PythonRunConfiguration) {
+            PythonRunConfiguration configuration = (PythonRunConfiguration) settings.getConfiguration();
+            String pytutorPath = getPluginDirPath(configuration.getProject()).toString();
+            String currentPythonPath = configuration.getEnvs().getOrDefault("PYTHONPATH", "");
+            if (!currentPythonPath.contains(pytutorPath)) {
+                configuration.getEnvs().put("PYTHONPATH", currentPythonPath + java.io.File.pathSeparator + pytutorPath);
+            }
         }
     }
 }

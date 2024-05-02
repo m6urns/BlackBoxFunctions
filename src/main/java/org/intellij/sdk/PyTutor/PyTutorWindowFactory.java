@@ -101,20 +101,42 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       return controlsPanel;
     }
 
+//    private void sendPromptToOpenAI(String prompt) {
+//      OpenAIClient.ProcessedChoice processedChoice = openAIClient.sendPromptToOpenAI(prompt);
+//      String codeDef = processedChoice.getDef();
+//      String codeContent = processedChoice.getCode();
+//      String rawResponse = processedChoice.getRaw();
+//      // TODO: Add the option to delete a function from the library
+//      if (codeDef.isEmpty() && codeContent.isEmpty()) {
+//        System.out.println("Error: " + rawResponse);
+//        addSubmittedTextBox("Error: " + rawResponse);
+//      } else {
+//        // Work on passing code and prompt to FunctionManager, for logging in show your work
+//        FunctionManager.writeToLibrary(project, codeDef, codeContent);
+//        addSubmittedTextBox("Generated code definition:\n" + codeDef);
+//      }
+//    }
+
     private void sendPromptToOpenAI(String prompt) {
       OpenAIClient.ProcessedChoice processedChoice = openAIClient.sendPromptToOpenAI(prompt);
       String codeDef = processedChoice.getDef();
       String codeContent = processedChoice.getCode();
       String rawResponse = processedChoice.getRaw();
-      // TODO: Add the option to delete a function from the library
+
       if (codeDef.isEmpty() && codeContent.isEmpty()) {
         System.out.println("Error: " + rawResponse);
         addSubmittedTextBox("Error: " + rawResponse);
       } else {
-        // Work on passing code and prompt to FunctionManager, for logging in show your work
-        FunctionManager.writeToLibrary(project, codeContent);
+        String functionName = extractFunctionName(codeDef);
+        FunctionManager.writeToLibrary(project, functionName, codeContent);
         addSubmittedTextBox("Generated code definition:\n" + codeDef);
       }
+    }
+
+    private String extractFunctionName(String codeDef) {
+      int startIndex = codeDef.indexOf("def ") + 4;
+      int endIndex = codeDef.indexOf("(", startIndex);
+      return codeDef.substring(startIndex, endIndex).trim();
     }
 
     // TODO: Refine the submitted box so that it looks nicer on the new PyCharm theme
