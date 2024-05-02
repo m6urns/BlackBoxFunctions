@@ -12,7 +12,10 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.RefreshQueue;
+import com.jetbrains.python.run.PythonRunConfiguration;
 import org.jetbrains.annotations.NotNull;
+import com.intellij.execution.RunManagerListener;
+import com.intellij.execution.RunnerAndConfigurationSettings;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,8 +23,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Map;
 
-public class FunctionManager {
+public class FunctionManager implements RunManagerListener {
     private static final String LIBRARY_FILE_NAME = "generated_functions.py";
     private static final String PLUGIN_DIR_NAME = ".pytutor";
 
@@ -30,7 +34,7 @@ public class FunctionManager {
             Path libraryPath = getLibraryPath();
             try {
                 Files.createDirectories(libraryPath.getParent());
-                Files.writeString(libraryPath, functionCode + "\\n", StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                Files.writeString(libraryPath, functionCode, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
                 System.out.println("Function code written to: " + libraryPath);
             } catch (IOException e) {
                 System.err.println("Error writing to library file: " + e.getMessage());
@@ -97,13 +101,35 @@ public class FunctionManager {
                     System.err.println("Failed to find or create a virtual file for: " + pluginDirPath);
                 }
 
-                sdkModificator.commitChanges();  // Commit changes here, within the same scope
+                sdkModificator.commitChanges();
             });
         } else {
             System.err.println("Python SDK not found for the project.");
         }
     }
 
+    @Override
+    public void runConfigurationAdded(@NotNull RunnerAndConfigurationSettings settings) {
+        updatePythonPath(settings);
+    }
+
+    @Override
+    public void runConfigurationChanged(@NotNull RunnerAndConfigurationSettings settings) {
+        updatePythonPath(settings);
+    }
+
+    private void updatePythonPath(RunnerAndConfigurationSettings settings) {
+        if (settings.getConfiguration() instanceof PythonRunConfiguration) {
+            PythonRunConfiguration configuration = (PythonRunConfiguration) settings.getConfiguration();
+            String pytutorPath = System.getProperty("user.home") + "/.pytutor";
+            Map<String, String> envs = configuration.getEnvs();
+            String currentPythonPath = envs.getOrDefault("PYTHONPATH", "");
+            if (!currentPythonPath.contains(pytutorPath)) {
+                envs.put("PYTHONPATH", currentPythonPath + File.pathSeparator + pytutorPath);
+                configuration.setEnvs(envs);
+            }
+        }
+    }
 
     public static void registerProjectListener() {
         ApplicationManager.getApplication().getMessageBus().connect().subscribe(ProjectManager.TOPIC, new ProjectManagerListener() {

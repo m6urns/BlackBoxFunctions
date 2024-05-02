@@ -24,6 +24,7 @@ java {
 intellij {
   type.set("PC")
   version.set("2024.1")
+  plugins.add("python-ce")
 }
 
 tasks {
