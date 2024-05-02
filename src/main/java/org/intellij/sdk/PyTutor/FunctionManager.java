@@ -49,23 +49,25 @@ public class FunctionManager implements RunManagerListener {
     }
 
     public static void deleteLibraryFiles(Project project) {
-        Path pluginDirPath = PathManager.getPluginDirPath(project);
-        Path functionManagerFilePath = Path.of(project.getBasePath(), PathManager.FUNCTION_MANAGER_FILE_NAME);
+        Path baseDirPath = Path.of(project.getBasePath());
+        Path functionManagerFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
 
-        try {
-            Files.list(pluginDirPath)
-                    .filter(path -> path.toString().endsWith(".py"))
-                    .forEach(path -> {
+        try (var lines = Files.lines(functionManagerFilePath)) {
+            lines.map(line -> line.split("\\s+")[1])
+                    .map(functionName -> functionName.split("\\.")[0])
+                    .distinct()
+                    .forEach(functionName -> {
+                        Path functionFilePath = baseDirPath.resolve(functionName + ".py");
                         try {
-                            Files.deleteIfExists(path);
-                            System.out.println("Library file deleted: " + path);
+                            Files.deleteIfExists(functionFilePath);
+                            System.out.println("Function file deleted: " + functionFilePath);
                         } catch (IOException e) {
-                            System.err.println("Error deleting library file: " + e.getMessage());
+                            System.err.println("Error deleting function file: " + e.getMessage());
                             e.printStackTrace();
                         }
                     });
         } catch (IOException e) {
-            System.err.println("Error listing library files: " + e.getMessage());
+            System.err.println("Error reading function manager file: " + e.getMessage());
             e.printStackTrace();
         }
 
