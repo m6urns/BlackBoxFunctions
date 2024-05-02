@@ -17,15 +17,14 @@ import java.nio.file.StandardOpenOption;
 public class FunctionManager implements RunManagerListener {
     public static void writeToLibrary(Project project, String functionName, String functionCode) {
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            Path pluginDirPath = PathManager.getPluginDirPath(project);
-            Path functionFilePath = pluginDirPath.resolve(functionName + ".py");
-            Path functionManagerFilePath = Path.of(project.getBasePath(), PathManager.FUNCTION_MANAGER_FILE_NAME);
+            Path baseDirPath = Path.of(project.getBasePath());
+            Path functionFilePath = baseDirPath.resolve(functionName + ".py");
+            Path functionManagerFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
 
             try {
-                Files.createDirectories(pluginDirPath);
                 Files.writeString(functionFilePath, functionCode, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-                String importStatement = String.format("from .%s.%s import %s\n", PathManager.PLUGIN_DIR_NAME, functionName, functionName);
-                Files.writeString(Path.of(functionManagerFilePath.toUri()), importStatement, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                String importStatement = String.format("from %s import %s\n", functionName, functionName);
+                Files.writeString(functionManagerFilePath, importStatement, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
                 System.out.println("Function code written to: " + functionFilePath);
             } catch (IOException e) {
                 System.err.println("Error writing to function file: " + e.getMessage());
@@ -34,7 +33,6 @@ public class FunctionManager implements RunManagerListener {
             ApplicationManager.getApplication().invokeLater(() -> {
                 ApplicationManager.getApplication().runWriteAction(() -> {
                     reloadProject(project);
-                    PathManager.addPluginDirToPythonPath(project);
                 });
             });
         });

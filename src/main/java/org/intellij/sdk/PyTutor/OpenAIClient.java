@@ -49,9 +49,9 @@ public class OpenAIClient {
     }
 
     public static class ProcessedChoice {
-        private String def;
-        private String code;
-        private String raw;
+        private final String def;
+        private final String code;
+        private final String raw;
 
         public ProcessedChoice(String def, String code, String raw) {
             this.def = def;

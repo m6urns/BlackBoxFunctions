@@ -60,8 +60,7 @@ public class PathManager {
     }
 
     public static void updatePythonPath(@NotNull RunnerAndConfigurationSettings settings) {
-        if (settings.getConfiguration() instanceof PythonRunConfiguration) {
-            PythonRunConfiguration configuration = (PythonRunConfiguration) settings.getConfiguration();
+        if (settings.getConfiguration() instanceof PythonRunConfiguration configuration) {
             String pytutorPath = getPluginDirPath(configuration.getProject()).toString();
             String currentPythonPath = configuration.getEnvs().getOrDefault("PYTHONPATH", "");
             if (!currentPythonPath.contains(pytutorPath)) {
