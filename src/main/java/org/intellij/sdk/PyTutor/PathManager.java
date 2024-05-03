@@ -68,4 +68,17 @@ public class PathManager {
             }
         }
     }
+
+    public static Sdk getCurrentPythonSdk(Project project) {
+        return ProjectRootManager.getInstance(project).getProjectSdk();
+    }
+
+    public static void printCurrentPythonSdk(Project project) {
+        Sdk pythonSdk = getCurrentPythonSdk(project);
+        if (pythonSdk != null) {
+            System.out.println("Current Python SDK: " + pythonSdk.getHomePath());
+        } else {
+            System.out.println("No Python SDK found for the project.");
+        }
+    }
 }

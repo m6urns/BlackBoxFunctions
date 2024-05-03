@@ -8,6 +8,9 @@ import com.intellij.openapi.vfs.newvfs.RefreshQueue;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.execution.RunManagerListener;
 import com.intellij.execution.RunnerAndConfigurationSettings;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
+import org.intellij.sdk.PyTutor.PathManager;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,6 +23,13 @@ public class FunctionManager implements RunManagerListener {
             Path baseDirPath = Path.of(project.getBasePath());
             Path functionFilePath = baseDirPath.resolve(functionName + ".py");
             Path functionManagerFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
+            Sdk pythonSdk = PathManager.getCurrentPythonSdk(project);
+
+            if (pythonSdk != null) {
+                System.out.println("Current Python SDK: " + pythonSdk.getHomePath());
+            } else {
+                System.out.println("No Python SDK found for the project.");
+            }
 
             try {
                 Files.writeString(functionFilePath, functionCode, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
