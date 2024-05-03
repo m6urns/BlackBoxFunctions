@@ -23,15 +23,15 @@ public class FunctionManager implements RunManagerListener {
     public static void writeToLibrary(Project project, String functionName, String functionCode) {
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             Path baseDirPath = Path.of(project.getBasePath());
-            Path functionManagerFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
+            Path generatedFunctionsFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
 
             try {
                 compilePyFile(project, functionName, functionCode);
-                String importStatement = String.format("from %s import %s\n", functionName, functionName);
-                Files.writeString(functionManagerFilePath, importStatement, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-                System.out.println("Function compiled and imported in function_manager.py");
+                String functionDefinition = String.format("def %s(*args, **kwargs):\n    from %s import %s\n    return %s(*args, **kwargs)\n\n", functionName, functionName, functionName, functionName);
+                Files.writeString(generatedFunctionsFilePath, functionDefinition, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                System.out.println("Function definition written to generated_functions.py");
             } catch (IOException e) {
-                System.err.println("Error writing to function manager file: " + e.getMessage());
+                System.err.println("Error writing to generated functions file: " + e.getMessage());
             }
 
             ApplicationManager.getApplication().invokeLater(() -> {
@@ -41,6 +41,7 @@ public class FunctionManager implements RunManagerListener {
             });
         });
     }
+
 
     private static void reloadProject(Project project) {
         VirtualFile projectDir = ProjectUtil.guessProjectDir(project);
@@ -140,6 +141,7 @@ public class FunctionManager implements RunManagerListener {
             Path tempDir = Files.createTempDirectory("pytutor");
             Path tempCompileScriptPath = tempDir.resolve("compile.py");
             try (InputStream inputStream = FunctionManager.class.getResourceAsStream("/compile.py")) {
+                assert inputStream != null;
                 Files.copy(inputStream, tempCompileScriptPath, StandardCopyOption.REPLACE_EXISTING);
             }
             return tempCompileScriptPath.toString();
