@@ -127,8 +127,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         System.out.println("Error: " + rawResponse);
         addSubmittedTextBox("Error: " + rawResponse);
       } else {
-        String functionName = extractFunctionName(codeDef);
-        FunctionManager.writeToLibrary(project, functionName, codeContent);
+        FunctionManager.writeToLibrary(project, codeDef, codeContent);
         addSubmittedTextBox("Generated code definition:\n" + codeDef);
       }
     }

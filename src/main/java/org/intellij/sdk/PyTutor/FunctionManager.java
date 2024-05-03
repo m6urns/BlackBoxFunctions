@@ -23,15 +23,18 @@ import java.nio.file.StandardOpenOption;
 // TODO: Fix weird naming bug on compiled functions and in deleteFunctions
 
 public class FunctionManager implements RunManagerListener {
-    public static void writeToLibrary(Project project, String functionName, String functionCode) {
+    public static void writeToLibrary(Project project, String functionDefinition, String functionCode) {
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             Path baseDirPath = Path.of(project.getBasePath());
             Path generatedFunctionsFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
 
             try {
+                String functionName = extractFunctionName(functionDefinition);
                 compilePyFile(project, functionName, functionCode);
-                String functionDefinition = String.format("def %s(*args, **kwargs):\n    from %s import %s\n    return %s(*args, **kwargs)\n\n", functionName, functionName, functionName, functionName);
-                Files.writeString(generatedFunctionsFilePath, functionDefinition, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                String commentedFunctionDefinition = "# " + functionDefinition + "\n";
+                String functionDefinitionInGeneratedFile = String.format("def %s(*args, **kwargs):\n    from %s import %s\n    return %s(*args, **kwargs)\n\n", functionName, functionName, functionName, functionName);
+                Files.writeString(generatedFunctionsFilePath, commentedFunctionDefinition, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                Files.writeString(generatedFunctionsFilePath, functionDefinitionInGeneratedFile, StandardOpenOption.APPEND);
                 System.out.println("Function definition written to generated_functions.py");
             } catch (IOException e) {
                 System.err.println("Error writing to generated functions file: " + e.getMessage());
@@ -45,6 +48,13 @@ public class FunctionManager implements RunManagerListener {
         });
     }
 
+    private static String extractFunctionName(String functionDefinition) {
+        String[] parts = functionDefinition.split("\\s+");
+        if (parts.length >= 2 && parts[0].equals("def")) {
+            return parts[1].split("\\(")[0];
+        }
+        return "";
+    }
 
     private static void reloadProject(Project project) {
         VirtualFile projectDir = ProjectUtil.guessProjectDir(project);
@@ -61,8 +71,9 @@ public class FunctionManager implements RunManagerListener {
         Path functionManagerFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
 
         try (var lines = Files.lines(functionManagerFilePath)) {
-            lines.map(line -> line.split("\\s+")[1])
-                    .map(functionName -> functionName.split("\\.")[0])
+            lines.filter(line -> line.startsWith("# def "))
+                    .map(line -> line.substring(2))
+                    .map(functionDefinition -> functionDefinition.split("\\(")[0].split("\\s+")[1])
                     .distinct()
                     .forEach(functionName -> {
                         Path compiledFilePath = baseDirPath.resolve(functionName + ".pyc");
