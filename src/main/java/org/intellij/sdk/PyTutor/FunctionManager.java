@@ -17,10 +17,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 
-// TODO: Resolve the import errors in pycharm, maybe there is a way to suppress that particular error or override its behavior?
 // TODO: Implement reloading created functions in the PyTutor tool window, don't delete function
 // TODO: Implement a way to delete a function from the PyTutor tool window
-// TODO: Fix weird naming bug on compiled functions and in deleteFunctions
 
 public class FunctionManager implements RunManagerListener {
     public static void writeToLibrary(Project project, String functionDefinition, String functionCode) {
@@ -54,6 +52,10 @@ public class FunctionManager implements RunManagerListener {
             return parts[1].split("\\(")[0];
         }
         return "";
+    }
+
+    public static String returnFunctionName(String functionDefinition) {
+        return extractFunctionName(functionDefinition);
     }
 
     private static void reloadProject(Project project) {
@@ -95,6 +97,40 @@ public class FunctionManager implements RunManagerListener {
             System.out.println("Function manager file deleted: " + functionManagerFilePath);
         } catch (IOException e) {
             System.err.println("Error deleting function manager file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteFunction(Project project, String functionName) {
+        Path baseDirPath = Path.of(project.getBasePath());
+        Path functionManagerFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
+        Path compiledFilePath = baseDirPath.resolve(functionName + ".pyc");
+
+        try {
+            // Delete the compiled function file
+            Files.deleteIfExists(compiledFilePath);
+            System.out.println("Compiled function file deleted: " + compiledFilePath);
+
+            // Remove the function definition and wrapper from the function manager file
+            Path tempFile = Files.createTempFile("pytutor", "temp");
+            try (var lines = Files.lines(functionManagerFilePath)) {
+                Files.write(tempFile, lines
+                        .filter(line -> !line.contains("def " + functionName + "("))
+                        .filter(line -> !line.contains("from " + functionName + " import " + functionName))
+                        .filter(line -> !line.contains("return " + functionName + "(*args, **kwargs)"))
+                        .toList());
+            }
+            Files.move(tempFile, functionManagerFilePath, StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Function definition and wrapper removed from function manager file: " + functionName);
+
+            // Reload the project
+            ApplicationManager.getApplication().invokeLater(() -> {
+                ApplicationManager.getApplication().runWriteAction(() -> {
+                    reloadProject(project);
+                });
+            });
+        } catch (IOException e) {
+            System.err.println("Error deleting function: " + e.getMessage());
             e.printStackTrace();
         }
     }

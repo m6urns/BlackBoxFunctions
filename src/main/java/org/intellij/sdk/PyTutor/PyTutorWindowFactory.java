@@ -82,7 +82,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submitButton.addActionListener(e ->  {
         String text = textArea.getText();
         System.out.println("Prompt: " + text);
-        addSubmittedTextBox("User prompt:\n" + text);
+//        addSubmittedTextBox("User prompt:\n" + text);
         sendPromptToOpenAI(text);
         textArea.setText("");
       });
@@ -101,22 +101,6 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       return controlsPanel;
     }
 
-//    private void sendPromptToOpenAI(String prompt) {
-//      OpenAIClient.ProcessedChoice processedChoice = openAIClient.sendPromptToOpenAI(prompt);
-//      String codeDef = processedChoice.getDef();
-//      String codeContent = processedChoice.getCode();
-//      String rawResponse = processedChoice.getRaw();
-//      // TODO: Add the option to delete a function from the library
-//      if (codeDef.isEmpty() && codeContent.isEmpty()) {
-//        System.out.println("Error: " + rawResponse);
-//        addSubmittedTextBox("Error: " + rawResponse);
-//      } else {
-//        // Work on passing code and prompt to FunctionManager, for logging in show your work
-//        FunctionManager.writeToLibrary(project, codeDef, codeContent);
-//        addSubmittedTextBox("Generated code definition:\n" + codeDef);
-//      }
-//    }
-
     private void sendPromptToOpenAI(String prompt) {
       OpenAIClient.ProcessedChoice processedChoice = openAIClient.sendPromptToOpenAI(prompt);
       String codeDef = processedChoice.getDef();
@@ -125,17 +109,12 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       if (codeDef.isEmpty() && codeContent.isEmpty()) {
         System.out.println("Error: " + rawResponse);
-        addSubmittedTextBox("Error: " + rawResponse);
+        addSubmittedTextBox("Error: " + rawResponse, "");
       } else {
+        String functionName = FunctionManager.returnFunctionName(codeDef);
         FunctionManager.writeToLibrary(project, codeDef, codeContent);
-        addSubmittedTextBox("Generated code definition:\n" + codeDef);
+        addSubmittedTextBox("Generated code definition:\n" + codeDef, functionName);
       }
-    }
-
-    private String extractFunctionName(String codeDef) {
-      int startIndex = codeDef.indexOf("def ") + 4;
-      int endIndex = codeDef.indexOf("(", startIndex);
-      return codeDef.substring(startIndex, endIndex).trim();
     }
 
     // TODO: Refine the submitted box so that it looks nicer on the new PyCharm theme
@@ -143,14 +122,26 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     // Will need to add a delete button and maybe a little recall button to each
     // Prompt. Maybe combine the prompt and function boxes. Or do we just need
     // function definitions?
-    private void addSubmittedTextBox(String text) {
+    private void addSubmittedTextBox(String text, String functionName) {
+      JPanel submittedTextPanel = new JPanel(new BorderLayout());
       JTextArea submittedTextArea = new JTextArea(text);
       submittedTextArea.setLineWrap(true);
       submittedTextArea.setWrapStyleWord(true);
       submittedTextArea.setEditable(false);
       submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-      submittedTextPanel.add(submittedTextArea);
-      submittedTextPanel.revalidate();
+      submittedTextPanel.add(submittedTextArea, BorderLayout.CENTER);
+
+      JButton deleteButton = new JButton("Delete");
+      deleteButton.addActionListener(e -> {
+        FunctionManager.deleteFunction(project, functionName);
+        this.submittedTextPanel.remove(submittedTextPanel);
+        this.submittedTextPanel.revalidate();
+        this.submittedTextPanel.repaint();
+      });
+      submittedTextPanel.add(deleteButton, BorderLayout.EAST);
+
+      this.submittedTextPanel.add(submittedTextPanel);
+      this.submittedTextPanel.revalidate();
     }
 
     public JPanel getContentPanel() {
