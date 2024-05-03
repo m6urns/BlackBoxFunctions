@@ -21,25 +21,15 @@ public class FunctionManager implements RunManagerListener {
     public static void writeToLibrary(Project project, String functionName, String functionCode) {
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             Path baseDirPath = Path.of(project.getBasePath());
-            Path functionFilePath = baseDirPath.resolve(functionName + ".py");
             Path functionManagerFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
-            Sdk pythonSdk = PathManager.getCurrentPythonSdk(project);
-
-            if (pythonSdk != null) {
-                System.out.println("Current Python SDK: " + pythonSdk.getHomePath());
-            } else {
-                System.out.println("No Python SDK found for the project.");
-            }
 
             try {
-                Files.writeString(functionFilePath, functionCode, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                compilePyFile(project, functionName, functionCode);
                 String importStatement = String.format("from %s import %s\n", functionName, functionName);
                 Files.writeString(functionManagerFilePath, importStatement, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-                System.out.println("Function code written to: " + functionFilePath);
-
-                compilePyFile(project, functionName);
+                System.out.println("Function compiled and imported in function_manager.py");
             } catch (IOException e) {
-                System.err.println("Error writing to function file: " + e.getMessage());
+                System.err.println("Error writing to function manager file: " + e.getMessage());
             }
 
             ApplicationManager.getApplication().invokeLater(() -> {
@@ -69,15 +59,12 @@ public class FunctionManager implements RunManagerListener {
                     .map(functionName -> functionName.split("\\.")[0])
                     .distinct()
                     .forEach(functionName -> {
-                        Path functionFilePath = baseDirPath.resolve(functionName + ".py");
                         Path compiledFilePath = baseDirPath.resolve(functionName + ".pyc");
                         try {
-                            Files.deleteIfExists(functionFilePath);
                             Files.deleteIfExists(compiledFilePath);
-                            System.out.println("Function file deleted: " + functionFilePath);
                             System.out.println("Compiled function file deleted: " + compiledFilePath);
                         } catch (IOException e) {
-                            System.err.println("Error deleting function file: " + e.getMessage());
+                            System.err.println("Error deleting compiled function file: " + e.getMessage());
                             e.printStackTrace();
                         }
                     });
@@ -94,7 +81,8 @@ public class FunctionManager implements RunManagerListener {
             e.printStackTrace();
         }
     }
-    private static void compilePyFile(Project project, String functionName) {
+
+    private static void compilePyFile(Project project, String functionName, String functionCode) {
         Sdk pythonSdk = PathManager.getCurrentPythonSdk(project);
         if (pythonSdk != null) {
             String pythonExecutable = pythonSdk.getHomePath();
@@ -103,30 +91,18 @@ public class FunctionManager implements RunManagerListener {
             Path functionFilePath = baseDirPath.resolve(functionName + ".py");
             Path compiledFilePath = baseDirPath.resolve(functionName + ".pyc");
 
-            System.out.println("Python Executable: " + pythonExecutable);
-            System.out.println("Compile Script Path: " + compileScriptPath);
-            System.out.println("Function File Path: " + functionFilePath);
-            System.out.println("Compiled File Path: " + compiledFilePath);
-
-            ProcessBuilder processBuilder = new ProcessBuilder(
-                    pythonExecutable,
-                    compileScriptPath,
-                    functionFilePath.toString(),
-                    compiledFilePath.toString()
-            );
-
             try {
+                Files.writeString(functionFilePath, functionCode, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+                ProcessBuilder processBuilder = new ProcessBuilder(
+                        pythonExecutable,
+                        compileScriptPath,
+                        functionFilePath.toString(),
+                        compiledFilePath.toString()
+                );
+
                 Process process = processBuilder.start();
                 int exitCode = process.waitFor();
-
-                // Read the process output and error streams
-                String output = new String(process.getInputStream().readAllBytes());
-                String error = new String(process.getErrorStream().readAllBytes());
-
-                System.out.println("Compilation Output:");
-                System.out.println(output);
-                System.out.println("Compilation Error:");
-                System.out.println(error);
 
                 if (exitCode == 0) {
                     System.out.println("Function compiled to: " + compiledFilePath);
@@ -137,6 +113,13 @@ public class FunctionManager implements RunManagerListener {
                 System.err.println("Error compiling function file: " + e.getMessage());
                 e.printStackTrace();
             } finally {
+                // Delete the temporary .py file
+                try {
+                    Files.deleteIfExists(functionFilePath);
+                } catch (IOException e) {
+                    System.err.println("Error deleting temporary .py file: " + e.getMessage());
+                }
+
                 // Delete the temporary compile.py script file
                 Path tempCompileScriptPath = Path.of(compileScriptPath);
                 try {
