@@ -108,11 +108,6 @@ public class OpenAIClient {
         return String.join("\n", lines);
     }
 
-    // TODO: I would like to find a way to generate a test function for the generated function
-    // Allowing for some automatic testing of the generated function, we don't
-    // want students having to write test code, but we also don't want to just pass
-    // un tested code to the students if we can avoid it.
-
     private String readApiKeyFromResources() {
         try (InputStream inputStream = getClass().getResourceAsStream("/pytutor.properties")) {
             Properties properties = new Properties();
