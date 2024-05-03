@@ -18,6 +18,9 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 
 // TODO: Resolve the import errors in pycharm, maybe there is a way to suppress that particular error or override its behavior?
+// TODO: Implement reloading created functions in the PyTutor tool window, don't delete function
+// TODO: Implement a way to delete a function from the PyTutor tool window
+// TODO: Fix weird naming bug on compiled functions and in deleteFunctions
 
 public class FunctionManager implements RunManagerListener {
     public static void writeToLibrary(Project project, String functionName, String functionCode) {
