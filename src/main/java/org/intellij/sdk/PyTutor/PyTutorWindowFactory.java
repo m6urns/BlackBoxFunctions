@@ -8,7 +8,6 @@ import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.ui.content.Content;
-import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,11 +15,17 @@ import javax.swing.*;
 import java.awt.*;
 
 final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
-
   @Override
   public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
     PyTutorWindowContent toolWindowContent = new PyTutorWindowContent(toolWindow, project);
-    Content content = ContentFactory.getInstance().createContent(toolWindowContent.getContentPanel(), "", false);
+    JPanel contentPanel = toolWindowContent.contentPanel;
+    Content content = toolWindow.getContentManager().getFactory().createContent(contentPanel, "", false);
+
+    // Replace the existing content if it exists
+    if (toolWindow.getContentManager().getContents().length > 0) {
+      toolWindow.getContentManager().removeAllContents(true);
+    }
+
     toolWindow.getContentManager().addContent(content);
 
     // Register the project listener
@@ -79,7 +84,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     private JPanel createControlsPanel(ToolWindow toolWindow) {
       JPanel controlsPanel = new JPanel();
       JButton submitButton = new JButton("Submit");
-      submitButton.addActionListener(e ->  {
+      submitButton.addActionListener(e -> {
         String text = textArea.getText();
         System.out.println("Prompt: " + text);
 //        addSubmittedTextBox("User prompt:\n" + text);
@@ -89,7 +94,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       controlsPanel.add(submitButton);
 
       JButton clearButton = new JButton("Clear");
-      clearButton.addActionListener(e ->  {
+      clearButton.addActionListener(e -> {
         textArea.setText("");
       });
       controlsPanel.add(clearButton);
@@ -129,7 +134,6 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextArea.setWrapStyleWord(true);
       submittedTextArea.setEditable(false);
       submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-      submittedTextPanel.add(submittedTextArea, BorderLayout.CENTER);
 
       JButton deleteButton = new JButton("Delete");
       deleteButton.addActionListener(e -> {
@@ -138,14 +142,17 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         this.submittedTextPanel.revalidate();
         this.submittedTextPanel.repaint();
       });
-      submittedTextPanel.add(deleteButton, BorderLayout.EAST);
+
+      // Create a panel to hold the delete button
+      JPanel deleteButtonPanel = new JPanel(new BorderLayout());
+      deleteButtonPanel.add(deleteButton, BorderLayout.EAST);
+
+      // Add the delete button panel to the north of the submitted text panel
+      submittedTextPanel.add(deleteButtonPanel, BorderLayout.NORTH);
+      submittedTextPanel.add(submittedTextArea, BorderLayout.CENTER);
 
       this.submittedTextPanel.add(submittedTextPanel);
       this.submittedTextPanel.revalidate();
-    }
-
-    public JPanel getContentPanel() {
-      return contentPanel;
     }
   }
 }
