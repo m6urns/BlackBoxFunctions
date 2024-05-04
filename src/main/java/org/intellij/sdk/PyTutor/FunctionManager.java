@@ -16,6 +16,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 // TODO: Implement reloading created functions in the PyTutor tool window, don't delete function
 // TODO: Implement a way to delete a function from the PyTutor tool window
@@ -186,6 +189,21 @@ public class FunctionManager implements RunManagerListener {
         }
     }
 
+    public static List<String> readFunctionDefinitions(Project project) {
+        Path baseDirPath = Path.of(project.getBasePath());
+        Path generatedFunctionsFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
+
+        try (var lines = Files.lines(generatedFunctionsFilePath)) {
+            return lines.filter(line -> line.startsWith("# def "))
+                    .map(line -> line.substring(2))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            System.err.println("Error reading function definitions: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
     private static String extractCompileScript() {
         try {
             Path tempDir = Files.createTempDirectory("pytutor");
@@ -214,7 +232,7 @@ public class FunctionManager implements RunManagerListener {
         ApplicationManager.getApplication().getMessageBus().connect().subscribe(com.intellij.openapi.project.ProjectManager.TOPIC, new com.intellij.openapi.project.ProjectManagerListener() {
             @Override
             public void projectClosing(@NotNull Project project) {
-                deleteLibraryFiles(project);
+//                deleteLibraryFiles(project);
             }
         });
     }

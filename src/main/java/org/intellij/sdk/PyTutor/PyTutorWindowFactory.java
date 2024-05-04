@@ -10,6 +10,7 @@ import com.intellij.ui.components.JBTextArea;
 import com.intellij.ui.content.Content;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
+import java.util.List;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,6 +59,13 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       JBScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextPanel);
       submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
       contentPanel.add(submittedTextScrollPane, constraints);
+
+      // Load existing function definitions from generated_functions.py
+      List<String> functionDefinitions = FunctionManager.readFunctionDefinitions(project);
+      for (String functionDefinition : functionDefinitions) {
+        String functionName = FunctionManager.returnFunctionName(functionDefinition);
+        addSubmittedTextBox(functionDefinition, functionName);
+      }
     }
 
     // TODO: Get the cursor position correct here. Maybe a border issue?
@@ -118,7 +126,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       } else {
         String functionName = FunctionManager.returnFunctionName(codeDef);
         FunctionManager.writeToLibrary(project, codeDef, codeContent);
-        addSubmittedTextBox("Generated code definition:\n" + codeDef, functionName);
+        addSubmittedTextBox(codeDef, functionName);
       }
     }
 
