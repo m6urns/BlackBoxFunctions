@@ -145,7 +145,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       // Create a panel to hold the delete button
       JPanel deleteButtonPanel = new JPanel(new BorderLayout());
-      deleteButtonPanel.add(deleteButton, BorderLayout.EAST);
+      deleteButtonPanel.add(deleteButton, BorderLayout.WEST);
 
       // Add the delete button panel to the north of the submitted text panel
       submittedTextPanel.add(deleteButtonPanel, BorderLayout.NORTH);
