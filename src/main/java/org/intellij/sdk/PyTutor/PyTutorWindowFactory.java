@@ -40,6 +40,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     private final JTextArea textArea = new JBTextArea();
     private final JPanel submittedTextPanel = new JPanel(new GridLayout(0, 1, 0, 10));
     private final OpenAIClient openAIClient = new OpenAIClient();
+    private final JLabel statusLabel = new JLabel();
     private final Project project;
     private final FunctionManager functionManager;
 
@@ -62,6 +63,11 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       JBScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextPanel);
       submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
       contentPanel.add(submittedTextScrollPane, constraints);
+
+      constraints.gridy = 3;
+      constraints.weighty = 0.1;
+      statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+      contentPanel.add(statusLabel, constraints);
 
       // Load existing function definitions from generated_functions.py
       List<String> functionDefinitions = functionManager.readFunctionDefinitions(project);
@@ -118,6 +124,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     }
 
     private void sendPromptToOpenAI(String prompt) {
+      setStatus("Sending prompt to OpenAI...");
       OpenAIClient.ProcessedChoice processedChoice = openAIClient.sendPromptToOpenAI(prompt);
       String codeDef = processedChoice.getDef();
       String codeContent = processedChoice.getCode();
@@ -126,11 +133,17 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       if (codeDef.isEmpty() && codeContent.isEmpty()) {
         System.out.println("Error: " + rawResponse);
         addSubmittedTextBox("Error: " + rawResponse, "");
+        setStatus("Error: " + rawResponse);
       } else {
         String functionName = functionManager.returnFunctionName(codeDef);
         functionManager.writeToLibrary(project, codeDef, codeContent);
         addSubmittedTextBox(codeDef, functionName);
+        setStatus("Function '" + functionName + "' added successfully.");
       }
+    }
+
+    public void setStatus(String status) {
+      statusLabel.setText(status);
     }
 
     // TODO: Refine the submitted box so that it looks nicer on the new PyCharm theme
@@ -146,17 +159,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextArea.setEditable(false);
       submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-      JButton deleteButton = new JButton("Delete");
-      deleteButton.addActionListener(e -> {
-        functionManager.deleteFunction(project, functionName);
-        this.submittedTextPanel.remove(submittedTextPanel);
-        this.submittedTextPanel.revalidate();
-        this.submittedTextPanel.repaint();
-      });
-
-      // Create a panel to hold the delete button
-      JPanel deleteButtonPanel = new JPanel(new BorderLayout());
-      deleteButtonPanel.add(deleteButton, BorderLayout.WEST);
+      JPanel deleteButtonPanel = getjPanel(functionName, submittedTextPanel);
 
       // Add the delete button panel to the north of the submitted text panel
       submittedTextPanel.add(deleteButtonPanel, BorderLayout.NORTH);
@@ -164,6 +167,22 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       this.submittedTextPanel.add(submittedTextPanel);
       this.submittedTextPanel.revalidate();
+    }
+
+    private @NotNull JPanel getjPanel(String functionName, JPanel submittedTextPanel) {
+      JButton deleteButton = new JButton("Delete");
+      deleteButton.addActionListener(e -> {
+        functionManager.deleteFunction(project, functionName);
+        this.submittedTextPanel.remove(submittedTextPanel);
+        this.submittedTextPanel.revalidate();
+        this.submittedTextPanel.repaint();
+        setStatus("Function '" + functionName + "' removed successfully.");
+      });
+
+      // Create a panel to hold the delete button
+      JPanel deleteButtonPanel = new JPanel(new BorderLayout());
+      deleteButtonPanel.add(deleteButton, BorderLayout.WEST);
+      return deleteButtonPanel;
     }
   }
 }
