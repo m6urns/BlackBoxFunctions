@@ -7,10 +7,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 
 public class FunctionDeleter {
     public void deleteFunction(Project project, String functionName) {
-        Path baseDirPath = Path.of(project.getBasePath());
+        Path baseDirPath = Path.of(Objects.requireNonNull(project.getBasePath()));
         Path functionManagerFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
         Path compiledFilePath = baseDirPath.resolve(functionName + ".pyc");
 
@@ -44,7 +45,7 @@ public class FunctionDeleter {
     }
 
     public static void deleteLibraryFiles(Project project) {
-        Path baseDirPath = Path.of(project.getBasePath());
+        Path baseDirPath = Path.of(Objects.requireNonNull(project.getBasePath()));
         Path functionManagerFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
 
         try (var lines = Files.lines(functionManagerFilePath)) {

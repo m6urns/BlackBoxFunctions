@@ -12,12 +12,13 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class FunctionWriter {
     public void writeToLibrary(Project project, String functionDefinition, String functionCode) {
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            Path baseDirPath = Path.of(project.getBasePath());
+            Path baseDirPath = Path.of(Objects.requireNonNull(project.getBasePath()));
             Path generatedFunctionsFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
 
             try {
@@ -49,7 +50,7 @@ public class FunctionWriter {
     }
 
     public static List<String> readFunctionDefinitions(Project project) {
-        Path baseDirPath = Path.of(project.getBasePath());
+        Path baseDirPath = Path.of(Objects.requireNonNull(project.getBasePath()));
         Path generatedFunctionsFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
 
         try (var lines = Files.lines(generatedFunctionsFilePath)) {
@@ -68,7 +69,7 @@ public class FunctionWriter {
         if (pythonSdk != null) {
             String pythonExecutable = pythonSdk.getHomePath();
             String compileScriptPath = extractCompileScript();
-            Path baseDirPath = Path.of(project.getBasePath());
+            Path baseDirPath = Path.of(Objects.requireNonNull(project.getBasePath()));
             Path functionFilePath = baseDirPath.resolve(functionName + ".py");
             Path compiledFilePath = baseDirPath.resolve(functionName + ".pyc");
 
