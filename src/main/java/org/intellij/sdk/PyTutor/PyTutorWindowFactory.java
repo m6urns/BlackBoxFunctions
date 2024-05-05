@@ -159,17 +159,6 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextArea.setEditable(false);
       submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-      JPanel deleteButtonPanel = getjPanel(functionName, submittedTextPanel);
-
-      // Add the delete button panel to the north of the submitted text panel
-      submittedTextPanel.add(deleteButtonPanel, BorderLayout.NORTH);
-      submittedTextPanel.add(submittedTextArea, BorderLayout.CENTER);
-
-      this.submittedTextPanel.add(submittedTextPanel);
-      this.submittedTextPanel.revalidate();
-    }
-
-    private JPanel getjPanel(String functionName, JPanel submittedTextPanel) {
       JButton deleteButton = new JButton("Delete");
       deleteButton.addActionListener(e -> {
         functionManager.deleteFunction(project, functionName);
@@ -182,7 +171,13 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       // Create a panel to hold the delete button
       JPanel deleteButtonPanel = new JPanel(new BorderLayout());
       deleteButtonPanel.add(deleteButton, BorderLayout.WEST);
-      return deleteButtonPanel;
+
+      // Add the delete button panel to the north of the submitted text panel
+      submittedTextPanel.add(deleteButtonPanel, BorderLayout.NORTH);
+      submittedTextPanel.add(submittedTextArea, BorderLayout.CENTER);
+
+      this.submittedTextPanel.add(submittedTextPanel);
+      this.submittedTextPanel.revalidate();
     }
   }
 }
