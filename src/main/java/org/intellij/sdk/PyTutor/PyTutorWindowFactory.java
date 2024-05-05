@@ -18,7 +18,8 @@ import java.awt.*;
 final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
   @Override
   public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
-    PyTutorWindowContent toolWindowContent = new PyTutorWindowContent(toolWindow, project);
+    FunctionManager functionManager = new FunctionManager();
+    PyTutorWindowContent toolWindowContent = new PyTutorWindowContent(toolWindow, project, functionManager);
     JPanel contentPanel = toolWindowContent.contentPanel;
     Content content = toolWindow.getContentManager().getFactory().createContent(contentPanel, "", false);
 
@@ -40,9 +41,11 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     private final JPanel submittedTextPanel = new JPanel(new GridLayout(0, 1, 0, 10));
     private final OpenAIClient openAIClient = new OpenAIClient();
     private final Project project;
+    private final FunctionManager functionManager;
 
-    public PyTutorWindowContent(ToolWindow toolWindow, Project project) {
+    public PyTutorWindowContent(ToolWindow toolWindow, Project project, FunctionManager functionManager) {
       this.project = project;
+      this.functionManager = functionManager;
       contentPanel.setLayout(new GridBagLayout());
       GridBagConstraints constraints = new GridBagConstraints();
       constraints.fill = GridBagConstraints.BOTH;
@@ -61,9 +64,9 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       contentPanel.add(submittedTextScrollPane, constraints);
 
       // Load existing function definitions from generated_functions.py
-      List<String> functionDefinitions = FunctionManager.readFunctionDefinitions(project);
+      List<String> functionDefinitions = functionManager.readFunctionDefinitions(project);
       for (String functionDefinition : functionDefinitions) {
-        String functionName = FunctionManager.returnFunctionName(functionDefinition);
+        String functionName = functionManager.returnFunctionName(functionDefinition);
         addSubmittedTextBox(functionDefinition, functionName);
       }
     }
@@ -95,7 +98,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submitButton.addActionListener(e -> {
         String text = textArea.getText();
         System.out.println("Prompt: " + text);
-//        addSubmittedTextBox("User prompt:\n" + text);
+        // addSubmittedTextBox("User prompt:\n" + text);
         sendPromptToOpenAI(text);
         textArea.setText("");
       });
@@ -124,8 +127,8 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         System.out.println("Error: " + rawResponse);
         addSubmittedTextBox("Error: " + rawResponse, "");
       } else {
-        String functionName = FunctionManager.returnFunctionName(codeDef);
-        FunctionManager.writeToLibrary(project, codeDef, codeContent);
+        String functionName = functionManager.returnFunctionName(codeDef);
+        functionManager.writeToLibrary(project, codeDef, codeContent);
         addSubmittedTextBox(codeDef, functionName);
       }
     }
@@ -145,7 +148,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       JButton deleteButton = new JButton("Delete");
       deleteButton.addActionListener(e -> {
-        FunctionManager.deleteFunction(project, functionName);
+        functionManager.deleteFunction(project, functionName);
         this.submittedTextPanel.remove(submittedTextPanel);
         this.submittedTextPanel.revalidate();
         this.submittedTextPanel.repaint();
