@@ -169,7 +169,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       this.submittedTextPanel.revalidate();
     }
 
-    private @NotNull JPanel getjPanel(String functionName, JPanel submittedTextPanel) {
+    private JPanel getjPanel(String functionName, JPanel submittedTextPanel) {
       JButton deleteButton = new JButton("Delete");
       deleteButton.addActionListener(e -> {
         functionManager.deleteFunction(project, functionName);
