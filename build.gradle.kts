@@ -23,7 +23,7 @@ java {
 // See https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
   type.set("PC")
-  version.set("2024.1")
+  version.set("2024.1.1")
   plugins.add("python-ce")
 }
 
