@@ -7,14 +7,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class FunctionDeleter {
     public void deleteFunction(Project project, String functionName) {
         Path baseDirPath = Path.of(Objects.requireNonNull(project.getBasePath()));
         Path functionManagerFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
         Path compiledFilePath = baseDirPath.resolve(functionName + ".pyc");
-
         try {
             // Delete the compiled function file
             Files.deleteIfExists(compiledFilePath);
@@ -23,11 +25,28 @@ public class FunctionDeleter {
             // Remove the function definition and wrapper from the function manager file
             Path tempFile = Files.createTempFile("pytutor", "temp");
             try (var lines = Files.lines(functionManagerFilePath)) {
-                Files.write(tempFile, lines
+                List<String> filteredLines = lines
                         .filter(line -> !line.contains("def " + functionName + "("))
                         .filter(line -> !line.contains("from " + functionName + " import " + functionName))
                         .filter(line -> !line.contains("return " + functionName + "(*args, **kwargs)"))
-                        .toList());
+                        .collect(Collectors.toList());
+
+                // Remove empty lines between functions
+                List<String> cleanedLines = new ArrayList<>();
+                boolean isPreviousLineEmpty = false;
+                for (String line : filteredLines) {
+                    if (line.trim().isEmpty()) {
+                        if (!isPreviousLineEmpty) {
+                            cleanedLines.add(line);
+                            isPreviousLineEmpty = true;
+                        }
+                    } else {
+                        cleanedLines.add(line);
+                        isPreviousLineEmpty = false;
+                    }
+                }
+
+                Files.write(tempFile, cleanedLines);
             }
             Files.move(tempFile, functionManagerFilePath, StandardCopyOption.REPLACE_EXISTING);
             System.out.println("Function definition and wrapper removed from function manager file: " + functionName);
