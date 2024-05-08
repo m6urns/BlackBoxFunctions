@@ -104,7 +104,6 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submitButton.addActionListener(e -> {
         String text = textArea.getText();
         System.out.println("Prompt: " + text);
-        // addSubmittedTextBox("User prompt:\n" + text);
         sendPromptToOpenAI(text);
         textArea.setText("");
       });
