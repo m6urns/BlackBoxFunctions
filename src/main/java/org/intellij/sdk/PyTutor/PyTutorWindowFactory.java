@@ -113,31 +113,6 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       return textBoxPanel;
     }
 
-//    @NotNull
-//    private JPanel createControlsPanel(ToolWindow toolWindow) {
-//      JPanel controlsPanel = new JPanel();
-//      JButton submitButton = new JButton("Submit");
-//      submitButton.addActionListener(e -> {
-//        String text = textArea.getText();
-//        System.out.println("Prompt: " + text);
-//        sendPromptToOpenAI(text);
-//        textArea.setText("");
-//      });
-//      controlsPanel.add(submitButton);
-//
-//      JButton clearButton = new JButton("Clear");
-//      clearButton.addActionListener(e -> {
-//        textArea.setText("");
-//      });
-//      controlsPanel.add(clearButton);
-//
-//      JButton hideToolWindowButton = new JButton("Hide");
-//      hideToolWindowButton.addActionListener(e -> toolWindow.hide(null));
-//      controlsPanel.add(hideToolWindowButton);
-//
-//      return controlsPanel;
-//    }
-
     @NotNull
     private JPanel createControlsPanel(ToolWindow toolWindow) {
       JPanel controlsPanel = new JPanel();
@@ -170,17 +145,19 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       GridBagConstraints constraints = new GridBagConstraints();
       constraints.insets = new Insets(2, 0, 2, 0); // Top, left, bottom, right padding
 
-      JLabel docLabel = new JLabel("<html><u>Documentation</u></html>");
+      JLabel docLabel = new JLabel("<html><u>How do I use these functions?</u></html>");
       docLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
       docLabel.setForeground(Color.BLUE);
       docLabel.addMouseListener(new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
-          JFrame docFrame = new JFrame("Plugin Documentation");
+          JFrame docFrame = new JFrame("Using the PyTutor Plugin");
           JTextArea docArea = new JTextArea();
           docArea.setEditable(false);
-          docArea.setText("This is the documentation for the PyTutor plugin.\n\n" +
-                  "Add your documentation content here...");
+          docArea.setText("Importing your generated functions\n\n" +
+                  "You can add your generated functions to your Python code by importing the generated_functions module.\n" +
+                    "You can import all of the functions you create by adding the following line to the top of your .py file:\n\n" +
+                    "from generated_functions import *\n\n");
           docFrame.add(new JScrollPane(docArea), BorderLayout.CENTER);
           docFrame.setSize(500, 200);
           docFrame.setLocationRelativeTo(null);
