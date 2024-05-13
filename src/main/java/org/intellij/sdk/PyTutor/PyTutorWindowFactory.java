@@ -197,8 +197,8 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     private void addSubmittedTextBox(String text, String functionName) {
       JPanel submittedTextPanel = new JPanel(new BorderLayout());
       submittedTextPanel.setBorder(BorderFactory.createCompoundBorder(
-              BorderFactory.createEmptyBorder(5, 0, 0, 0),
-              BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY)));
+              BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY),
+              BorderFactory.createEmptyBorder(5, 5, 5, 5)));
       submittedTextPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50)); // Set a maximum height for the panel
 
       JTextArea submittedTextArea = new JTextArea(text);
@@ -213,7 +213,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
       JButton deleteButton = new JButton("X");
-      deleteButton.setPreferredSize(new Dimension(30, 45));
+      deleteButton.setPreferredSize(new Dimension(30, 40));
       deleteButton.setMargin(new Insets(0, 0, 0, 0));
       deleteButton.addActionListener(e -> {
         functionManager.deleteFunction(project, functionName);
@@ -229,6 +229,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextPanel.add(buttonPanel, BorderLayout.EAST);
 
       this.submittedTextPanel.add(submittedTextPanel);
+      this.submittedTextPanel.add(Box.createVerticalStrut(5)); // Add a space of 5 pixels below each box
       updateUI();
 
       // Add a ComponentListener to adjust the size when the panel is resized
