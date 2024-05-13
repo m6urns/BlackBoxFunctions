@@ -156,7 +156,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
     private void addSubmittedTextBox(String text, String functionName) {
       JPanel submittedTextPanel = new JPanel(new BorderLayout());
-      submittedTextPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150)); // Set a maximum height for the panel
+      submittedTextPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 115)); // Set a maximum height for the panel
 
       JTextArea submittedTextArea = new JTextArea(text);
       submittedTextArea.setEditable(false);
@@ -165,7 +165,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 //      submittedTextArea.setBackground(Color.WHITE);
       submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-      JScrollPane submittedTextScrollPane = new JScrollPane(submittedTextArea);
+      JScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextArea);
       submittedTextScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
       submittedTextScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder());
