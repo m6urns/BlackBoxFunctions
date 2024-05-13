@@ -158,7 +158,20 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextArea.setEditable(false);
       submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-      JButton deleteButton = new JButton("Delete");
+      // Set the preferred size of the submitted text area
+      submittedTextArea.setPreferredSize(new Dimension(0, submittedTextArea.getPreferredSize().height));
+
+      // Create a scroll pane to hold the submitted text area
+      JScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextArea);
+      submittedTextScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+      submittedTextScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+      // Create a panel to hold the delete button
+      JPanel deleteButtonPanel = new JPanel(new BorderLayout());
+      deleteButtonPanel.setOpaque(false);
+
+      JButton deleteButton = new JButton("X");
+      deleteButton.setMargin(JBUI.emptyInsets());
       deleteButton.addActionListener(e -> {
         functionManager.deleteFunction(project, functionName);
         this.submittedTextPanel.remove(submittedTextPanel);
@@ -167,13 +180,14 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         setStatus("Function '" + functionName + "' removed successfully.");
       });
 
-      // Create a panel to hold the delete button
-      JPanel deleteButtonPanel = new JPanel(new BorderLayout());
-      deleteButtonPanel.add(deleteButton, BorderLayout.WEST);
+      deleteButtonPanel.add(deleteButton, BorderLayout.SOUTH);
 
-      // Add the delete button panel to the north of the submitted text panel
-      submittedTextPanel.add(deleteButtonPanel, BorderLayout.NORTH);
-      submittedTextPanel.add(submittedTextArea, BorderLayout.CENTER);
+      // Create a panel to hold the scroll pane and the delete button panel
+      JPanel contentPanel = new JPanel(new BorderLayout());
+      contentPanel.add(submittedTextScrollPane, BorderLayout.CENTER);
+      contentPanel.add(deleteButtonPanel, BorderLayout.SOUTH);
+
+      submittedTextPanel.add(contentPanel, BorderLayout.CENTER);
 
       this.submittedTextPanel.add(submittedTextPanel);
       this.submittedTextPanel.revalidate();
