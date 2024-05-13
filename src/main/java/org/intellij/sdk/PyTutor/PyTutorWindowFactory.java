@@ -67,6 +67,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextPanel.setLayout(new BoxLayout(submittedTextPanel, BoxLayout.Y_AXIS));
       JBScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextPanel);
       submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+      submittedTextScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       contentPanel.add(submittedTextScrollPane, constraints);
 
       constraints.gridy = 3;
@@ -96,6 +97,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       textArea.setWrapStyleWord(true);
 
       JBScrollPane scrollPane = new JBScrollPane(textArea);
+      scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       textBoxPanel.add(scrollPane, constraints);
       textArea.setCaretPosition(0);
 
@@ -150,50 +152,6 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       statusLabel.setText(status);
     }
 
-//    private void addSubmittedTextBox(String text, String functionName) {
-//      JPanel submittedTextPanel = new JPanel(new BorderLayout());
-//      submittedTextPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 115)); // Set a maximum height for the panel
-//
-//      JTextArea submittedTextArea = new JTextArea(text);
-//      submittedTextArea.setEditable(false);
-//      submittedTextArea.setLineWrap(true);
-//      submittedTextArea.setWrapStyleWord(true);
-//      submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-//
-//      JScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextArea);
-//      submittedTextScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-//      submittedTextScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-//      submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder());
-//
-//      submittedTextPanel.add(submittedTextScrollPane, BorderLayout.CENTER);
-//
-//      JButton deleteButton = new JButton("X");
-//      deleteButton.setPreferredSize(new Dimension(50, 30));
-//      deleteButton.addActionListener(e -> {
-//        functionManager.deleteFunction(project, functionName);
-//        this.submittedTextPanel.remove(submittedTextPanel);
-//        updateUI();
-//        setStatus("Function '" + functionName + "' removed successfully.");
-//      });
-//
-//      JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-//      buttonPanel.add(deleteButton);
-//      submittedTextPanel.add(buttonPanel, BorderLayout.SOUTH);
-//
-//      this.submittedTextPanel.add(submittedTextPanel);
-//      updateUI();
-//
-//      // Add a ComponentListener to adjust the size when the panel is resized
-//      submittedTextPanel.addComponentListener(new ComponentAdapter() {
-//        @Override
-//        public void componentResized(ComponentEvent e) {
-//          Dimension preferredSize = new Dimension(submittedTextPanel.getWidth() - 20, submittedTextArea.getPreferredSize().height);
-//          submittedTextArea.setPreferredSize(preferredSize);
-//          submittedTextArea.revalidate();
-//        }
-//      });
-//    }
-
     private void addSubmittedTextBox(String text, String functionName) {
       JPanel submittedTextPanel = new JPanel(new BorderLayout());
       submittedTextPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -206,11 +164,14 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextArea.setLineWrap(true);
       submittedTextArea.setWrapStyleWord(true);
       submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+      submittedTextArea.setBackground(null);
 
       JScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextArea);
       submittedTextScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
       submittedTextScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder());
+      submittedTextScrollPane.setOpaque(false);
+      submittedTextScrollPane.getViewport().setOpaque(false);
 
       JButton deleteButton = new JButton("X");
       deleteButton.setPreferredSize(new Dimension(30, 40));
