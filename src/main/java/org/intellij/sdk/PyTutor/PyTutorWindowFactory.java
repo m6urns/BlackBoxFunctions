@@ -150,28 +150,70 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     // Will need to add a delete button and maybe a little recall button to each
     // Prompt. Maybe combine the prompt and function boxes. Or do we just need
     // function definitions?
+//    private void addSubmittedTextBox(String text, String functionName) {
+//      JPanel submittedTextPanel = new JPanel(new BorderLayout());
+//      JTextArea submittedTextArea = new JTextArea(text);
+//      submittedTextArea.setLineWrap(true);
+//      submittedTextArea.setWrapStyleWord(true);
+//      submittedTextArea.setEditable(false);
+//      submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+//
+//      // Set the preferred size of the submitted text area
+//      submittedTextArea.setPreferredSize(new Dimension(0, submittedTextArea.getPreferredSize().height));
+//
+//      // Create a scroll pane to hold the submitted text area
+//      JScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextArea);
+//      submittedTextScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+//      submittedTextScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+//
+//      // Create a panel to hold the delete button
+//      JPanel deleteButtonPanel = new JPanel(new BorderLayout());
+//      deleteButtonPanel.setOpaque(false);
+//
+//      JButton deleteButton = new JButton("X");
+//      deleteButton.setMargin(JBUI.emptyInsets());
+//      deleteButton.addActionListener(e -> {
+//        functionManager.deleteFunction(project, functionName);
+//        this.submittedTextPanel.remove(submittedTextPanel);
+//        this.submittedTextPanel.revalidate();
+//        this.submittedTextPanel.repaint();
+//        setStatus("Function '" + functionName + "' removed successfully.");
+//      });
+//
+//      deleteButtonPanel.add(deleteButton, BorderLayout.SOUTH);
+//
+//      // Create a panel to hold the scroll pane and the delete button panel
+//      JPanel contentPanel = new JPanel(new BorderLayout());
+//      contentPanel.add(submittedTextScrollPane, BorderLayout.CENTER);
+//      contentPanel.add(deleteButtonPanel, BorderLayout.SOUTH);
+//
+//      submittedTextPanel.add(contentPanel, BorderLayout.CENTER);
+//
+//      this.submittedTextPanel.add(submittedTextPanel);
+//
     private void addSubmittedTextBox(String text, String functionName) {
       JPanel submittedTextPanel = new JPanel(new BorderLayout());
+
+      // This JPanel will adjust its size with the parent panel
+      submittedTextPanel.setPreferredSize(new Dimension(this.submittedTextPanel.getWidth(), 100)); // Fixed height
+
       JTextArea submittedTextArea = new JTextArea(text);
       submittedTextArea.setLineWrap(true);
       submittedTextArea.setWrapStyleWord(true);
       submittedTextArea.setEditable(false);
-      submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+      submittedTextArea.setBackground(Color.WHITE);
 
-      // Set the preferred size of the submitted text area
-      submittedTextArea.setPreferredSize(new Dimension(0, submittedTextArea.getPreferredSize().height));
-
-      // Create a scroll pane to hold the submitted text area
-      JScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextArea);
+      // JScrollPane to handle text area scrolling and wrapping
+      JScrollPane submittedTextScrollPane = new JScrollPane(submittedTextArea);
       submittedTextScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
       submittedTextScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+      submittedTextScrollPane.setPreferredSize(new Dimension(submittedTextPanel.getWidth() - 10, 85)); // Adjust width slightly less than parent
 
-      // Create a panel to hold the delete button
-      JPanel deleteButtonPanel = new JPanel(new BorderLayout());
-      deleteButtonPanel.setOpaque(false);
+      // Adding JScrollPane to the panel with a little margin
+      submittedTextPanel.add(submittedTextScrollPane, BorderLayout.CENTER);
 
+      // Creating and adding the delete button at the bottom left of the panel
       JButton deleteButton = new JButton("X");
-      deleteButton.setMargin(JBUI.emptyInsets());
       deleteButton.addActionListener(e -> {
         functionManager.deleteFunction(project, functionName);
         this.submittedTextPanel.remove(submittedTextPanel);
@@ -180,17 +222,16 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         setStatus("Function '" + functionName + "' removed successfully.");
       });
 
-      deleteButtonPanel.add(deleteButton, BorderLayout.SOUTH);
+      JPanel buttonPanel = new JPanel(new BorderLayout());
+      buttonPanel.add(deleteButton, BorderLayout.WEST);
+      buttonPanel.setPreferredSize(new Dimension(submittedTextPanel.getWidth(), 15));  // Fixed height for button panel
 
-      // Create a panel to hold the scroll pane and the delete button panel
-      JPanel contentPanel = new JPanel(new BorderLayout());
-      contentPanel.add(submittedTextScrollPane, BorderLayout.CENTER);
-      contentPanel.add(deleteButtonPanel, BorderLayout.SOUTH);
-
-      submittedTextPanel.add(contentPanel, BorderLayout.CENTER);
+      // Adding the button panel at the bottom
+      submittedTextPanel.add(buttonPanel, BorderLayout.SOUTH);
 
       this.submittedTextPanel.add(submittedTextPanel);
       this.submittedTextPanel.revalidate();
+      this.submittedTextPanel.repaint();
     }
   }
 }
