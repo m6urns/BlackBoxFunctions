@@ -223,22 +223,102 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 //      this.submittedTextPanel.repaint();
 //    }
 
+//    private void addSubmittedTextBox(String text, String functionName) {
+//      JPanel submittedTextPanel = new JPanel(new BorderLayout());
+//
+//      JTextArea submittedTextArea = new JTextArea(text);
+//      submittedTextArea.setEditable(false);
+//      submittedTextArea.setLineWrap(true);
+//      submittedTextArea.setWrapStyleWord(true);
+//      submittedTextArea.setBackground(Color.WHITE);
+//      submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+//
+//      // Set a fixed height for the submitted text area
+//      Dimension preferredSize = new Dimension(submittedTextPanel.getWidth() - 20, 100); // Adjust the height as needed
+//      submittedTextArea.setPreferredSize(preferredSize);
+//
+//      JScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextArea);
+//      submittedTextScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+//      submittedTextScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+//      submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder());
+//
+//      submittedTextPanel.add(submittedTextScrollPane, BorderLayout.CENTER);
+//
+//      JButton deleteButton = new JButton("X");
+//      deleteButton.setPreferredSize(new Dimension(50, 30));
+//      deleteButton.addActionListener(e -> {
+//        functionManager.deleteFunction(project, functionName);
+//        this.submittedTextPanel.remove(submittedTextPanel);
+//        updateUI();
+//        setStatus("Function '" + functionName + "' removed successfully.");
+//      });
+//
+//      JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+//      buttonPanel.add(deleteButton);
+//      submittedTextPanel.add(buttonPanel, BorderLayout.SOUTH);
+//
+//      this.submittedTextPanel.add(submittedTextPanel);
+//      updateUI();
+//
+//      // Add a ComponentListener to adjust the width when the panel is resized
+//      submittedTextPanel.addComponentListener(new ComponentAdapter() {
+//        @Override
+//        public void componentResized(ComponentEvent e) {
+//          Dimension preferredSize = submittedTextArea.getPreferredSize();
+//          preferredSize.width = submittedTextPanel.getWidth() - 20; // Adjust the width to fit within the panel
+//          submittedTextArea.setPreferredSize(preferredSize);
+//          submittedTextArea.revalidate();
+//        }
+//      });
+//    }
+//private void addSubmittedTextBox(String text, String functionName) {
+//  JPanel submittedTextPanel = new JPanel(new BorderLayout());
+//  submittedTextPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150)); // Set a maximum height for the panel
+//
+//  JTextArea submittedTextArea = new JTextArea(text);
+//  submittedTextArea.setEditable(false);
+//  submittedTextArea.setLineWrap(true);
+//  submittedTextArea.setWrapStyleWord(true);
+//  submittedTextArea.setBackground(Color.WHITE);
+//  submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+//
+//  JScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextArea);
+//  submittedTextScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+//  submittedTextScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+//  submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder());
+//
+//  submittedTextPanel.add(submittedTextScrollPane, BorderLayout.CENTER);
+//
+//  JButton deleteButton = new JButton("X");
+//  deleteButton.setPreferredSize(new Dimension(50, 30));
+//  deleteButton.addActionListener(e -> {
+//    functionManager.deleteFunction(project, functionName);
+//    this.submittedTextPanel.remove(submittedTextPanel);
+//    updateUI();
+//    setStatus("Function '" + functionName + "' removed successfully.");
+//  });
+//
+//  JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+//  buttonPanel.add(deleteButton);
+//  submittedTextPanel.add(buttonPanel, BorderLayout.SOUTH);
+//
+//  this.submittedTextPanel.add(submittedTextPanel);
+//  updateUI();
+//}
+
     private void addSubmittedTextBox(String text, String functionName) {
       JPanel submittedTextPanel = new JPanel(new BorderLayout());
+      submittedTextPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150)); // Set a maximum height for the panel
 
       JTextArea submittedTextArea = new JTextArea(text);
       submittedTextArea.setEditable(false);
       submittedTextArea.setLineWrap(true);
       submittedTextArea.setWrapStyleWord(true);
-      submittedTextArea.setBackground(Color.WHITE);
+//      submittedTextArea.setBackground(Color.WHITE);
       submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-      // Set a fixed height for the submitted text area
-      Dimension preferredSize = new Dimension(submittedTextPanel.getWidth() - 20, 100); // Adjust the height as needed
-      submittedTextArea.setPreferredSize(preferredSize);
-
-      JScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextArea);
-      submittedTextScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+      JScrollPane submittedTextScrollPane = new JScrollPane(submittedTextArea);
+      submittedTextScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
       submittedTextScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
@@ -260,12 +340,11 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       this.submittedTextPanel.add(submittedTextPanel);
       updateUI();
 
-      // Add a ComponentListener to adjust the width when the panel is resized
+      // Add a ComponentListener to adjust the size when the panel is resized
       submittedTextPanel.addComponentListener(new ComponentAdapter() {
         @Override
         public void componentResized(ComponentEvent e) {
-          Dimension preferredSize = submittedTextArea.getPreferredSize();
-          preferredSize.width = submittedTextPanel.getWidth() - 20; // Adjust the width to fit within the panel
+          Dimension preferredSize = new Dimension(submittedTextPanel.getWidth() - 20, submittedTextArea.getPreferredSize().height);
           submittedTextArea.setPreferredSize(preferredSize);
           submittedTextArea.revalidate();
         }
