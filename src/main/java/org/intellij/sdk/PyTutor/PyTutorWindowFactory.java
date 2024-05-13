@@ -13,6 +13,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.List;
 
@@ -62,10 +64,14 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       contentPanel.add(createTextBoxPanel(), constraints);
 
       constraints.gridy = 1;
-      constraints.weighty = 0.2;
+      constraints.weighty = 0.05;
       contentPanel.add(createControlsPanel(toolWindow), constraints);
 
       constraints.gridy = 2;
+      constraints.weighty = 0.02;
+      contentPanel.add(createDocumentationPanel(), constraints);
+
+      constraints.gridy = 3;
       constraints.weighty = 0.7;
       submittedTextPanel.setLayout(new BoxLayout(submittedTextPanel, BoxLayout.Y_AXIS));
       JBScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextPanel);
@@ -73,7 +79,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       contentPanel.add(submittedTextScrollPane, constraints);
 
-      constraints.gridy = 3;
+      constraints.gridy = 4;
       constraints.weighty = 0.1;
       statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
       contentPanel.add(statusLabel, constraints);
@@ -107,6 +113,31 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       return textBoxPanel;
     }
 
+//    @NotNull
+//    private JPanel createControlsPanel(ToolWindow toolWindow) {
+//      JPanel controlsPanel = new JPanel();
+//      JButton submitButton = new JButton("Submit");
+//      submitButton.addActionListener(e -> {
+//        String text = textArea.getText();
+//        System.out.println("Prompt: " + text);
+//        sendPromptToOpenAI(text);
+//        textArea.setText("");
+//      });
+//      controlsPanel.add(submitButton);
+//
+//      JButton clearButton = new JButton("Clear");
+//      clearButton.addActionListener(e -> {
+//        textArea.setText("");
+//      });
+//      controlsPanel.add(clearButton);
+//
+//      JButton hideToolWindowButton = new JButton("Hide");
+//      hideToolWindowButton.addActionListener(e -> toolWindow.hide(null));
+//      controlsPanel.add(hideToolWindowButton);
+//
+//      return controlsPanel;
+//    }
+
     @NotNull
     private JPanel createControlsPanel(ToolWindow toolWindow) {
       JPanel controlsPanel = new JPanel();
@@ -130,6 +161,37 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       controlsPanel.add(hideToolWindowButton);
 
       return controlsPanel;
+    }
+
+    @NotNull
+    private JPanel createDocumentationPanel() {
+      JPanel outerPanel = new JPanel(new BorderLayout());
+      JPanel innerPanel = new JPanel(new GridBagLayout());
+      GridBagConstraints constraints = new GridBagConstraints();
+      constraints.insets = new Insets(2, 0, 2, 0); // Top, left, bottom, right padding
+
+      JLabel docLabel = new JLabel("<html><u>Documentation</u></html>");
+      docLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+      docLabel.setForeground(Color.BLUE);
+      docLabel.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+          JFrame docFrame = new JFrame("Plugin Documentation");
+          JTextArea docArea = new JTextArea();
+          docArea.setEditable(false);
+          docArea.setText("This is the documentation for the PyTutor plugin.\n\n" +
+                  "Add your documentation content here...");
+          docFrame.add(new JScrollPane(docArea), BorderLayout.CENTER);
+          docFrame.setSize(500, 200);
+          docFrame.setLocationRelativeTo(null);
+          docFrame.setVisible(true);
+        }
+      });
+
+      innerPanel.add(docLabel, constraints);
+      outerPanel.add(innerPanel, BorderLayout.CENTER);
+
+      return outerPanel;
     }
 
     private void sendPromptToOpenAI(String prompt) {
