@@ -20,8 +20,8 @@ public class FunctionManager implements RunManagerListener {
         this.functionDeleter = new FunctionDeleter();
     }
 
-    public void writeToLibrary(Project project, String functionDefinition, String functionCode) {
-        functionWriter.writeToLibrary(project, functionDefinition, functionCode);
+    public void writeToLibrary(Project project, String functionDefinition, String functionCode, String prompt) {
+        functionWriter.writeToLibrary(project, functionDefinition, functionCode, prompt);
     }
 
     public String returnFunctionName(String functionDefinition) {

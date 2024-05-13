@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class FunctionWriter {
-    public void writeToLibrary(Project project, String functionDefinition, String functionCode) {
+    public void writeToLibrary(Project project, String functionDefinition, String functionCode, String prompt) {
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             Path baseDirPath = Path.of(Objects.requireNonNull(project.getBasePath()));
             Path generatedFunctionsFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
@@ -24,9 +24,11 @@ public class FunctionWriter {
             try {
                 String functionName = extractFunctionName(functionDefinition);
                 compilePyFile(project, functionName, functionCode);
+                String commentedPrompt = "# Prompt: " + prompt + "\n";
                 String commentedFunctionDefinition = "# " + functionDefinition + "\n";
                 String functionDefinitionInGeneratedFile = String.format("def %s(*args, **kwargs):\n    from %s import %s\n    return %s(*args, **kwargs)\n\n", functionName, functionName, functionName, functionName);
-                Files.writeString(generatedFunctionsFilePath, commentedFunctionDefinition, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                Files.writeString(generatedFunctionsFilePath, commentedPrompt, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                Files.writeString(generatedFunctionsFilePath, commentedFunctionDefinition, StandardOpenOption.APPEND);
                 Files.writeString(generatedFunctionsFilePath, functionDefinitionInGeneratedFile, StandardOpenOption.APPEND);
                 System.out.println("Function definition written to generated_functions.py");
             } catch (IOException e) {

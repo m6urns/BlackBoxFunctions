@@ -13,10 +13,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
 
 final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
   @Override
@@ -43,6 +45,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     private final JTextArea textArea = new JBTextArea();
     private final JPanel submittedTextPanel = new JPanel(new GridLayout(0, 1, 0, 10));
     private final OpenAIClient openAIClient = new OpenAIClient();
+//    private final Map<String, String> functionPrompts = new HashMap<>();
     private final JLabel statusLabel = new JLabel();
     private final Project project;
     private final FunctionManager functionManager;
@@ -142,9 +145,10 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         setStatus("Error: " + rawResponse);
       } else {
         String functionName = functionManager.returnFunctionName(codeDef);
-        functionManager.writeToLibrary(project, codeDef, codeContent);
+        functionManager.writeToLibrary(project, codeDef, codeContent, prompt);
         addSubmittedTextBox(codeDef, functionName);
         setStatus("Function '" + functionName + "' added successfully.");
+//        functionPrompts.put(functionName, prompt); // Store the prompt for the function
       }
     }
 
@@ -165,6 +169,15 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextArea.setWrapStyleWord(true);
       submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
       submittedTextArea.setBackground(null);
+
+//      // Add a tooltip with the prompt for this function
+//      String prompt = functionPrompts.get(functionName);
+//      if (prompt != null) {
+//        System.out.println("Setting tooltip for function '" + functionName + "' with prompt: " + prompt);
+//        submittedTextPanel.setToolTipText("Prompt: " + prompt);
+//      } else {
+//        System.out.println("No prompt found for function '" + functionName + "'");
+//      }
 
       JScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextArea);
       submittedTextScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
