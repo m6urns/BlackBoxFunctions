@@ -10,9 +10,16 @@ import com.intellij.ui.components.JBTextArea;
 import com.intellij.ui.content.Content;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
+
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
 
 final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
@@ -47,6 +54,27 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     public PyTutorWindowContent(ToolWindow toolWindow, Project project, FunctionManager functionManager) {
       this.project = project;
       this.functionManager = functionManager;
+//      contentPanel.setLayout(new GridBagLayout());
+//      GridBagConstraints constraints = new GridBagConstraints();
+//      constraints.fill = GridBagConstraints.BOTH;
+//      constraints.weightx = 1.0;
+//      constraints.weighty = 0.2;
+//      contentPanel.add(createTextBoxPanel(), constraints);
+//
+//      constraints.gridy = 1;
+//      constraints.weighty = 0.2;
+//      contentPanel.add(createControlsPanel(toolWindow), constraints);
+//
+//      constraints.gridy = 2;
+//      constraints.weighty = 0.7;
+//      JBScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextPanel);
+//      submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+//      contentPanel.add(submittedTextScrollPane, constraints);
+//
+//      constraints.gridy = 3;
+//      constraints.weighty = 0.1;
+//      statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+//      contentPanel.add(statusLabel, constraints);
       contentPanel.setLayout(new GridBagLayout());
       GridBagConstraints constraints = new GridBagConstraints();
       constraints.fill = GridBagConstraints.BOTH;
@@ -60,6 +88,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       constraints.gridy = 2;
       constraints.weighty = 0.7;
+      submittedTextPanel.setLayout(new BoxLayout(submittedTextPanel, BoxLayout.Y_AXIS));
       JBScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextPanel);
       submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
       contentPanel.add(submittedTextScrollPane, constraints);
@@ -190,48 +219,53 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 //      submittedTextPanel.add(contentPanel, BorderLayout.CENTER);
 //
 //      this.submittedTextPanel.add(submittedTextPanel);
-//
+//      this.submittedTextPanel.revalidate();
+//      this.submittedTextPanel.repaint();
+//    }
+
     private void addSubmittedTextBox(String text, String functionName) {
       JPanel submittedTextPanel = new JPanel(new BorderLayout());
 
-      // This JPanel will adjust its size with the parent panel
-      submittedTextPanel.setPreferredSize(new Dimension(this.submittedTextPanel.getWidth(), 100)); // Fixed height
-
       JTextArea submittedTextArea = new JTextArea(text);
+      submittedTextArea.setEditable(false);
       submittedTextArea.setLineWrap(true);
       submittedTextArea.setWrapStyleWord(true);
-      submittedTextArea.setEditable(false);
       submittedTextArea.setBackground(Color.WHITE);
+      submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-      // JScrollPane to handle text area scrolling and wrapping
       JScrollPane submittedTextScrollPane = new JScrollPane(submittedTextArea);
-      submittedTextScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-      submittedTextScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-      submittedTextScrollPane.setPreferredSize(new Dimension(submittedTextPanel.getWidth() - 10, 85)); // Adjust width slightly less than parent
+      submittedTextScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+      submittedTextScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+      submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-      // Adding JScrollPane to the panel with a little margin
       submittedTextPanel.add(submittedTextScrollPane, BorderLayout.CENTER);
 
-      // Creating and adding the delete button at the bottom left of the panel
       JButton deleteButton = new JButton("X");
+      deleteButton.setPreferredSize(new Dimension(50, 30));
       deleteButton.addActionListener(e -> {
         functionManager.deleteFunction(project, functionName);
         this.submittedTextPanel.remove(submittedTextPanel);
-        this.submittedTextPanel.revalidate();
-        this.submittedTextPanel.repaint();
+        updateUI();
         setStatus("Function '" + functionName + "' removed successfully.");
       });
 
-      JPanel buttonPanel = new JPanel(new BorderLayout());
-      buttonPanel.add(deleteButton, BorderLayout.WEST);
-      buttonPanel.setPreferredSize(new Dimension(submittedTextPanel.getWidth(), 15));  // Fixed height for button panel
-
-      // Adding the button panel at the bottom
+      JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+      buttonPanel.add(deleteButton);
       submittedTextPanel.add(buttonPanel, BorderLayout.SOUTH);
 
       this.submittedTextPanel.add(submittedTextPanel);
-      this.submittedTextPanel.revalidate();
-      this.submittedTextPanel.repaint();
+      updateUI();
+    }
+
+    private void updateUI() {
+      SwingUtilities.invokeLater(() -> {
+        this.submittedTextPanel.revalidate();
+        this.submittedTextPanel.repaint();
+        if (this.submittedTextPanel.getParent() != null) {
+          this.submittedTextPanel.getParent().revalidate();
+          this.submittedTextPanel.getParent().repaint();
+        }
+      });
     }
   }
 }
