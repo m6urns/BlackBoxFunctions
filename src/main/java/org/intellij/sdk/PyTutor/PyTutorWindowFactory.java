@@ -233,7 +233,11 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextArea.setBackground(Color.WHITE);
       submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-      JScrollPane submittedTextScrollPane = new JScrollPane(submittedTextArea);
+      // Set a fixed height for the submitted text area
+      Dimension preferredSize = new Dimension(submittedTextPanel.getWidth() - 20, 100); // Adjust the height as needed
+      submittedTextArea.setPreferredSize(preferredSize);
+
+      JScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextArea);
       submittedTextScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
       submittedTextScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -255,6 +259,17 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       this.submittedTextPanel.add(submittedTextPanel);
       updateUI();
+
+      // Add a ComponentListener to adjust the width when the panel is resized
+      submittedTextPanel.addComponentListener(new ComponentAdapter() {
+        @Override
+        public void componentResized(ComponentEvent e) {
+          Dimension preferredSize = submittedTextArea.getPreferredSize();
+          preferredSize.width = submittedTextPanel.getWidth() - 20; // Adjust the width to fit within the panel
+          submittedTextArea.setPreferredSize(preferredSize);
+          submittedTextArea.revalidate();
+        }
+      });
     }
 
     private void updateUI() {
