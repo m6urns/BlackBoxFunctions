@@ -32,6 +32,10 @@ public class FunctionManager implements RunManagerListener {
         return FunctionWriter.readFunctionDefinitions(project);
     }
 
+    public List<String> readFunctionPrompts(Project project) {
+        return FunctionWriter.readFunctionPrompts(project);
+    }
+
     public void deleteFunction(Project project, String functionName) {
         functionDeleter.deleteFunction(project, functionName);
     }
