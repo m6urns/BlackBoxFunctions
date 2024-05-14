@@ -57,7 +57,6 @@ public class FunctionWriter {
 
         try (var lines = Files.lines(generatedFunctionsFilePath)) {
             return lines.filter(line -> line.startsWith("# def "))
-//                    .map(line -> line.substring(2))
                     .map(line -> line.substring(2, line.indexOf('#', 2) >= 0 ? line.indexOf('#', 2) : line.length()))
                     .collect(Collectors.toList());
         } catch (IOException e) {
@@ -70,13 +69,18 @@ public class FunctionWriter {
     public static List<String> readFunctionPrompts(Project project) {
         Path baseDirPath = Path.of(Objects.requireNonNull(project.getBasePath()));
         Path generatedFunctionsFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
+
         try (var lines = Files.lines(generatedFunctionsFilePath)) {
-            return lines.filter(line -> line.contains("# Prompt:"))
+            List<String> prompts = lines.filter(line -> line.contains("# Prompt:"))
                     .map(line -> {
                         int promptStart = line.indexOf("# Prompt:") + "# Prompt:".length();
-                        return line.substring(promptStart).trim();
+                        String prompt = line.substring(promptStart).trim();
+                        System.out.println("Extracted prompt: " + prompt);
+                        return prompt;
                     })
                     .collect(Collectors.toList());
+            System.out.println("Loaded prompts: " + prompts);
+            return prompts;
         } catch (IOException e) {
             System.err.println("Error reading function prompts: " + e.getMessage());
             e.printStackTrace();

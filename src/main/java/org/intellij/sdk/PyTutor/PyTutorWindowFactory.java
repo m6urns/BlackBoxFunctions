@@ -47,10 +47,11 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     private final JTextArea textArea = new JBTextArea();
     private final JPanel submittedTextPanel = new JPanel(new GridLayout(0, 1, 0, 10));
     private final OpenAIClient openAIClient = new OpenAIClient();
-//    private final Map<String, String> functionPrompts = new HashMap<>();
     private final JLabel statusLabel = new JLabel();
     private final Project project;
     private final FunctionManager functionManager;
+    private final Map<String, String> functionPrompts = new HashMap<>();
+
 
     public PyTutorWindowContent(ToolWindow toolWindow, Project project, FunctionManager functionManager) {
       this.project = project;
@@ -84,10 +85,22 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
       contentPanel.add(statusLabel, constraints);
 
-      // Load existing function definitions from generated_functions.py
+      // Load existing function prompts from generated_functions.py
+      List<String> functionPrompts = functionManager.readFunctionPrompts(project);
       List<String> functionDefinitions = functionManager.readFunctionDefinitions(project);
+      for (int i = 0; i < functionDefinitions.size(); i++) {
+        String functionDefinition = functionDefinitions.get(i);
+        String functionName = functionManager.returnFunctionName(functionDefinition);
+        String prompt = (i < functionPrompts.size()) ? functionPrompts.get(i) : "";
+        System.out.println("Function name: " + functionName + ", Prompt: " + prompt);
+        this.functionPrompts.put(functionName, prompt);
+      }
+
+      // Load existing function definitions from generated_functions.py and add submitted text boxes
       for (String functionDefinition : functionDefinitions) {
         String functionName = functionManager.returnFunctionName(functionDefinition);
+        System.out.println("Loaded function definition: " + functionDefinition);
+        System.out.println("Function name: " + functionName);
         addSubmittedTextBox(functionDefinition, functionName);
       }
     }
@@ -186,10 +199,11 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         setStatus("Error: " + rawResponse);
       } else {
         String functionName = functionManager.returnFunctionName(codeDef);
+        System.out.println("Function name: " + functionName);
         functionManager.writeToLibrary(project, codeDef, codeContent, prompt);
+        functionPrompts.put(functionName, prompt);
         addSubmittedTextBox(codeDef, functionName);
         setStatus("Function '" + functionName + "' added successfully.");
-//        functionPrompts.put(functionName, prompt); // Store the prompt for the function
       }
     }
 
@@ -198,6 +212,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     }
 
     private void addSubmittedTextBox(String text, String functionName) {
+      System.out.println("Adding submitted text box for function '" + functionName + "'");
       JPanel submittedTextPanel = new JPanel(new BorderLayout());
       submittedTextPanel.setBorder(BorderFactory.createCompoundBorder(
               BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY),
@@ -211,14 +226,12 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
       submittedTextArea.setBackground(null);
 
-//      // Add a tooltip with the prompt for this function
-//      String prompt = functionPrompts.get(functionName);
-//      if (prompt != null) {
-//        System.out.println("Setting tooltip for function '" + functionName + "' with prompt: " + prompt);
-//        submittedTextPanel.setToolTipText("Prompt: " + prompt);
-//      } else {
-//        System.out.println("No prompt found for function '" + functionName + "'");
-//      }
+      String prompt = functionPrompts.get(functionName);
+      if (prompt != null) {
+        submittedTextPanel.setToolTipText("Prompt: " + prompt);
+      } else {
+        System.out.println("No prompt found for function '" + functionName + "'");
+      }
 
       JScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextArea);
       submittedTextScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
