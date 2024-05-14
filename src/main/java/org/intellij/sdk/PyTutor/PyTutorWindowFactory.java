@@ -192,17 +192,24 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       String codeContent = processedChoice.getCode();
       String rawResponse = processedChoice.getRaw();
 
-      if (codeDef.isEmpty() && codeContent.isEmpty()) {
-        System.out.println("Error: " + rawResponse);
-        addSubmittedTextBox("Error: " + rawResponse, "");
-        setStatus("Error: " + rawResponse);
+      if (rawResponse.startsWith("InvalidPrompt:")) {
+        String errorMessage = "Error: " + rawResponse;
+        System.out.println(errorMessage);
+        setStatus(errorMessage);
       } else {
-        String functionName = functionManager.returnFunctionName(codeDef);
-        System.out.println("Function name: " + functionName);
-        functionManager.writeToLibrary(project, codeDef, codeContent, prompt);
-        functionPrompts.put(functionName, prompt);
-        addSubmittedTextBox(codeDef, functionName);
-        setStatus("Function '" + functionName + "' added successfully.");
+        if (codeDef.isEmpty() && codeContent.isEmpty()) {
+          String errorMessage = "Error: " + rawResponse;
+          System.out.println(errorMessage);
+          addSubmittedTextBox(errorMessage, "");
+          setStatus(errorMessage);
+        } else {
+          String functionName = functionManager.returnFunctionName(codeDef);
+          System.out.println("Function name: " + functionName);
+          functionManager.writeToLibrary(project, codeDef, codeContent, prompt);
+          functionPrompts.put(functionName, prompt);
+          addSubmittedTextBox(codeDef, functionName);
+          setStatus("Function '" + functionName + "' added successfully.");
+        }
       }
     }
 

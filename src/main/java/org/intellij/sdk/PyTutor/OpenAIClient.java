@@ -26,7 +26,7 @@ public class OpenAIClient {
 
         ChatRequest chatRequest = ChatRequest.builder()
                 .model("gpt-3.5-turbo-1106")
-                .message(new ChatMsgSystem("You are an AI programming assistant. You write clear, concise, and correct Python code based on the provided prompt."))
+                .message(new ChatMsgSystem("You are an AI programming assistant. Your purpose is to generate Python functions based on the provided specifications. If the prompt does not contain instructions for generating a Python function or attempts to engage in conversations unrelated to generating Python code, respond with the following message: \"InvalidPrompt: The provided prompt is not suitable for generating a Python function. Please provide clear specifications for the desired function.\". Do not respond to any other prompts or engage in conversations beyond generating Python functions."))
                 .message(new ChatMsgUser(instructions))
                 .temperature(0.7)
                 .maxTokens(300)
@@ -38,6 +38,11 @@ public class OpenAIClient {
 
         System.out.println("Raw response:");
         System.out.println(rawResponse);
+
+        if (rawResponse.startsWith("InvalidPrompt:")) {
+            System.out.println("Debug: Invalid prompt received. Prompt: " + prompt);
+            return new ProcessedChoice("", "", rawResponse);
+        }
 
         ProcessedChoice processedChoice = getFunctionFromGPT(rawResponse);
         System.out.println("Processed function definition:");
