@@ -107,8 +107,10 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       JBScrollPane scrollPane = new JBScrollPane(textArea);
       scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-      textBoxPanel.add(scrollPane, constraints);
+      scrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
+
       textArea.setCaretPosition(0);
+      textBoxPanel.add(scrollPane, constraints);
 
       return textBoxPanel;
     }
@@ -147,7 +149,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       JLabel docLabel = new JLabel("<html><u>How do I use these functions?</u></html>");
       docLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-      docLabel.setForeground(Color.BLUE);
+      docLabel.setForeground(Color.GRAY);
       docLabel.addMouseListener(new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -159,7 +161,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
                     "You can import all of the functions you create by adding the following line to the top of your .py file:\n\n" +
                     "from generated_functions import *\n\n");
           docFrame.add(new JScrollPane(docArea), BorderLayout.CENTER);
-          docFrame.setSize(500, 200);
+          docFrame.setSize(750, 200);
           docFrame.setLocationRelativeTo(null);
           docFrame.setVisible(true);
         }

@@ -24,11 +24,11 @@ public class FunctionWriter {
             try {
                 String functionName = extractFunctionName(functionDefinition);
                 compilePyFile(project, functionName, functionCode);
-                String commentedPrompt = "# Prompt: " + prompt + "\n";
-                String commentedFunctionDefinition = "# " + functionDefinition + "\n";
+//                String commentedPrompt = "# Prompt: " + prompt + "\n";
+                String commentedFunctionDefinition = "# " + functionDefinition + " # Prompt: " + prompt + "\n";
                 String functionDefinitionInGeneratedFile = String.format("def %s(*args, **kwargs):\n    from %s import %s\n    return %s(*args, **kwargs)\n\n", functionName, functionName, functionName, functionName);
-                Files.writeString(generatedFunctionsFilePath, commentedPrompt, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-                Files.writeString(generatedFunctionsFilePath, commentedFunctionDefinition, StandardOpenOption.APPEND);
+                Files.writeString(generatedFunctionsFilePath, commentedFunctionDefinition, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+//                Files.writeString(generatedFunctionsFilePath, commentedFunctionDefinition, StandardOpenOption.APPEND);
                 Files.writeString(generatedFunctionsFilePath, functionDefinitionInGeneratedFile, StandardOpenOption.APPEND);
                 System.out.println("Function definition written to generated_functions.py");
             } catch (IOException e) {
@@ -57,7 +57,8 @@ public class FunctionWriter {
 
         try (var lines = Files.lines(generatedFunctionsFilePath)) {
             return lines.filter(line -> line.startsWith("# def "))
-                    .map(line -> line.substring(2))
+//                    .map(line -> line.substring(2))
+                    .map(line -> line.substring(2, line.indexOf('#', 2) >= 0 ? line.indexOf('#', 2) : line.length()))
                     .collect(Collectors.toList());
         } catch (IOException e) {
             System.err.println("Error reading function definitions: " + e.getMessage());

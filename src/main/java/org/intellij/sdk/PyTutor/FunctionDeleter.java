@@ -26,7 +26,7 @@ public class FunctionDeleter {
             Path tempFile = Files.createTempFile("pytutor", "temp");
             try (var lines = Files.lines(functionManagerFilePath)) {
                 List<String> filteredLines = lines
-                        .filter(line -> !line.contains("# Prompt:"))
+//                        .filter(line -> !line.contains("# Prompt:"))
                         .filter(line -> !line.contains("def " + functionName + "("))
                         .filter(line -> !line.contains("from " + functionName + " import " + functionName))
                         .filter(line -> !line.contains("return " + functionName + "(*args, **kwargs)"))
