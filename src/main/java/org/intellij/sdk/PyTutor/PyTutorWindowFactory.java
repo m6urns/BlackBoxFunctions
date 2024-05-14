@@ -42,7 +42,6 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
   }
 
   private static class PyTutorWindowContent {
-
     private final JPanel contentPanel = new JPanel();
     private final JTextArea textArea = new JBTextArea();
     private final JPanel submittedTextPanel = new JPanel(new GridLayout(0, 1, 0, 10));
