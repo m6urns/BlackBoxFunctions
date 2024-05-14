@@ -218,7 +218,9 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
               BorderFactory.createEmptyBorder(5, 5, 5, 5)));
       submittedTextPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50)); // Set a maximum height for the panel
 
-      JTextArea submittedTextArea = new JTextArea(text);
+      String functionDefinition = text.replace("def ", "");
+
+      JTextArea submittedTextArea = new JTextArea(functionDefinition);
       submittedTextArea.setEditable(false);
       submittedTextArea.setLineWrap(true);
       submittedTextArea.setWrapStyleWord(true);
