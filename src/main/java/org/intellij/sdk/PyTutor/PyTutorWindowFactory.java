@@ -212,6 +212,10 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
     private void addSubmittedTextBox(String text, String functionName) {
       System.out.println("Adding submitted text box for function '" + functionName + "'");
+
+      JPanel containerPanel = new JPanel();
+      containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.Y_AXIS));
+
       JPanel submittedTextPanel = new JPanel(new BorderLayout());
       submittedTextPanel.setBorder(BorderFactory.createCompoundBorder(
               BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY),
@@ -246,7 +250,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       deleteButton.setMargin(new Insets(0, 0, 0, 0));
       deleteButton.addActionListener(e -> {
         functionManager.deleteFunction(project, functionName);
-        this.submittedTextPanel.remove(submittedTextPanel);
+        this.submittedTextPanel.remove(containerPanel);
         updateUI();
         setStatus("Function '" + functionName + "' removed successfully.");
       });
@@ -257,8 +261,11 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextPanel.add(submittedTextScrollPane, BorderLayout.CENTER);
       submittedTextPanel.add(buttonPanel, BorderLayout.EAST);
 
-      this.submittedTextPanel.add(submittedTextPanel);
-      this.submittedTextPanel.add(Box.createVerticalStrut(5)); // Add a space of 5 pixels below each box
+      containerPanel.add(submittedTextPanel);
+
+      containerPanel.add(Box.createVerticalStrut(5)); // Add a vertical strut of 5 pixels
+
+      this.submittedTextPanel.add(containerPanel);
       updateUI();
 
       // Add a ComponentListener to adjust the size when the panel is resized
