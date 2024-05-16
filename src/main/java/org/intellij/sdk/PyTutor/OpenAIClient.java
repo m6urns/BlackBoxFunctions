@@ -13,10 +13,12 @@ import java.util.Properties;
 
 public class OpenAIClient {
     private final BaseSimpleOpenAI openAI;
+    private final PromptLogging promptLogging;
 
     public OpenAIClient() {
         String apiKey = readApiKeyFromResources();
         this.openAI = SimpleOpenAI.builder().apiKey(apiKey).build();
+        this.promptLogging = new PromptLogging();
     }
 
     public ProcessedChoice sendPromptToOpenAI(String prompt) {
@@ -32,9 +34,13 @@ public class OpenAIClient {
                 .maxTokens(300)
                 .build();
 
+        promptLogging.logPrompt(prompt);
+
         var futureChat = openAI.chatCompletions().create(chatRequest);
         var chatResponse = futureChat.join();
         String rawResponse = chatResponse.firstContent();
+
+        promptLogging.logResponse(rawResponse);
 
         System.out.println("Raw response:");
         System.out.println(rawResponse);
