@@ -50,6 +50,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     private final Project project;
     private final FunctionManager functionManager;
     private final Map<String, String> functionPrompts = new HashMap<>();
+    private final PromptLogging promptLogging = new PromptLogging();
 
 
     public PyTutorWindowContent(ToolWindow toolWindow, Project project, FunctionManager functionManager) {
@@ -87,11 +88,14 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       // Load existing function prompts from generated_functions.py
       List<String> functionPrompts = functionManager.readFunctionPrompts(project);
       List<String> functionDefinitions = functionManager.readFunctionDefinitions(project);
+      List<String> functionUIDs = functionManager.readFunctionUIDs(project);
+
       for (int i = 0; i < functionDefinitions.size(); i++) {
         String functionDefinition = functionDefinitions.get(i);
         String functionName = functionManager.returnFunctionName(functionDefinition);
         String prompt = (i < functionPrompts.size()) ? functionPrompts.get(i) : "";
-        System.out.println("Function name: " + functionName + ", Prompt: " + prompt);
+        String uid = (i < functionUIDs.size()) ? functionUIDs.get(i) : "";
+        System.out.println("Function name: " + functionName + ", Prompt: " + prompt + ", UID: " + uid);
         this.functionPrompts.put(functionName, prompt);
       }
 
@@ -165,6 +169,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       docLabel.addMouseListener(new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
+//          promptLogging.logInteraction("Documentation link clicked");
           JFrame docFrame = new JFrame("Using the PyTutor Plugin");
           JTextArea docArea = new JTextArea();
           docArea.setEditable(false);
@@ -191,6 +196,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       String codeDef = processedChoice.getDef();
       String codeContent = processedChoice.getCode();
       String rawResponse = processedChoice.getRaw();
+      String uid = processedChoice.getUid();
 
       if (rawResponse.startsWith("InvalidPrompt:")) {
         String errorMessage = "Error: " + rawResponse;
@@ -205,7 +211,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         } else {
           String functionName = functionManager.returnFunctionName(codeDef);
           System.out.println("Function name: " + functionName);
-          functionManager.writeToLibrary(project, codeDef, codeContent, prompt);
+          functionManager.writeToLibrary(project, codeDef, codeContent, prompt, uid);
           functionPrompts.put(functionName, prompt);
           addSubmittedTextBox(codeDef, functionName);
           setStatus("Function '" + functionName + "' added successfully.");
@@ -256,8 +262,10 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       deleteButton.setPreferredSize(new Dimension(30, 40));
       deleteButton.setMargin(new Insets(0, 0, 0, 0));
       deleteButton.addActionListener(e -> {
+        String uid = functionManager.getFunctionUIDs(project, functionName);
         functionManager.deleteFunction(project, functionName);
         this.submittedTextPanel.remove(containerPanel);
+        promptLogging.logDeletion(uid, functionName);
         updateUI();
         setStatus("Function '" + functionName + "' removed successfully.");
       });

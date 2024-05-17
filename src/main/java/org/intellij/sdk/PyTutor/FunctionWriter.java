@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class FunctionWriter {
-    public void writeToLibrary(Project project, String functionDefinition, String functionCode, String prompt) {
+    public void writeToLibrary(Project project, String functionDefinition, String functionCode, String prompt, String uid) {
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             Path baseDirPath = Path.of(Objects.requireNonNull(project.getBasePath()));
             Path generatedFunctionsFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
@@ -25,7 +25,7 @@ public class FunctionWriter {
                 String functionName = extractFunctionName(functionDefinition);
                 compilePyFile(project, functionName, functionCode);
 //                String commentedPrompt = "# Prompt: " + prompt + "\n";
-                String commentedFunctionDefinition = "# " + functionDefinition + " # Prompt: " + prompt + "\n";
+                String commentedFunctionDefinition = "# " + functionDefinition + " # Prompt: " + prompt + " # UID: " + uid + "\n";
                 String functionDefinitionInGeneratedFile = String.format("def %s(*args, **kwargs):\n    from %s import %s\n    return %s(*args, **kwargs)\n\n", functionName, functionName, functionName, functionName);
                 Files.writeString(generatedFunctionsFilePath, commentedFunctionDefinition, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 //                Files.writeString(generatedFunctionsFilePath, commentedFunctionDefinition, StandardOpenOption.APPEND);
@@ -74,7 +74,13 @@ public class FunctionWriter {
             List<String> prompts = lines.filter(line -> line.contains("# Prompt:"))
                     .map(line -> {
                         int promptStart = line.indexOf("# Prompt:") + "# Prompt:".length();
-                        String prompt = line.substring(promptStart).trim();
+                        int uidStart = line.indexOf("# UID:");
+                        String prompt;
+                        if (uidStart >= 0) {
+                            prompt = line.substring(promptStart, uidStart).trim();
+                        } else {
+                            prompt = line.substring(promptStart).trim();
+                        }
                         System.out.println("Extracted prompt: " + prompt);
                         return prompt;
                     })
@@ -83,6 +89,28 @@ public class FunctionWriter {
             return prompts;
         } catch (IOException e) {
             System.err.println("Error reading function prompts: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    public static List<String> readFunctionUIDs(Project project) {
+        Path baseDirPath = Path.of(Objects.requireNonNull(project.getBasePath()));
+        Path generatedFunctionsFilePath = baseDirPath.resolve(PathManager.FUNCTION_MANAGER_FILE_NAME);
+
+        try (var lines = Files.lines(generatedFunctionsFilePath)) {
+            List<String> uids = lines.filter(line -> line.contains("# UID:"))
+                    .map(line -> {
+                        int uidStart = line.indexOf("# UID:") + "# UID:".length();
+                        String uid = line.substring(uidStart).trim();
+                        System.out.println("Extracted UID: " + uid);
+                        return uid;
+                    })
+                    .collect(Collectors.toList());
+            System.out.println("Loaded UIDs: " + uids);
+            return uids;
+        } catch (IOException e) {
+            System.err.println("Error reading function UIDs: " + e.getMessage());
             e.printStackTrace();
             return Collections.emptyList();
         }

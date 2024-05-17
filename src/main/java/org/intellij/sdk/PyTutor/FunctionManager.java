@@ -20,8 +20,8 @@ public class FunctionManager implements RunManagerListener {
         this.functionDeleter = new FunctionDeleter();
     }
 
-    public void writeToLibrary(Project project, String functionDefinition, String functionCode, String prompt) {
-        functionWriter.writeToLibrary(project, functionDefinition, functionCode, prompt);
+    public void writeToLibrary(Project project, String functionDefinition, String functionCode, String prompt, String uid) {
+        functionWriter.writeToLibrary(project, functionDefinition, functionCode, prompt, uid);
     }
 
     public String returnFunctionName(String functionDefinition) {
@@ -36,8 +36,27 @@ public class FunctionManager implements RunManagerListener {
         return FunctionWriter.readFunctionPrompts(project);
     }
 
+    public List<String> readFunctionUIDs(Project project) {
+        return FunctionWriter.readFunctionUIDs(project);
+    }
+
     public void deleteFunction(Project project, String functionName) {
         functionDeleter.deleteFunction(project, functionName);
+    }
+
+    public String getFunctionUIDs(Project project, String functionName) {
+        List<String> functionDefinitions = FunctionWriter.readFunctionDefinitions(project);
+        List<String> functionUIDs = FunctionWriter.readFunctionUIDs(project);
+
+        for (int i = 0; i < functionDefinitions.size(); i++) {
+            String functionDefinition = functionDefinitions.get(i);
+            String currentFunctionName = returnFunctionName(functionDefinition);
+            if (currentFunctionName.equals(functionName)) {
+                return functionUIDs.get(i);
+            }
+        }
+
+        return "";
     }
 
     public static void reloadProject(Project project) {

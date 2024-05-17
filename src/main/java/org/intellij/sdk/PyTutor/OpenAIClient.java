@@ -10,6 +10,7 @@ import io.github.sashirestela.openai.domain.chat.message.ChatMsgUser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.UUID;
 
 public class OpenAIClient {
     private final BaseSimpleOpenAI openAI;
@@ -22,6 +23,7 @@ public class OpenAIClient {
     }
 
     public ProcessedChoice sendPromptToOpenAI(String prompt) {
+        String uid = UUID.randomUUID().toString();
         String instructions = generateInstructions(prompt);
         System.out.println("Generated instructions:");
         System.out.println(instructions);
@@ -34,24 +36,23 @@ public class OpenAIClient {
                 .maxTokens(300)
                 .build();
 
-        promptLogging.logPrompt(prompt);
+        promptLogging.logPrompt(uid, prompt);
 
         var futureChat = openAI.chatCompletions().create(chatRequest);
         var chatResponse = futureChat.join();
         String rawResponse = chatResponse.firstContent();
 
-        promptLogging.logResponse(rawResponse);
+        promptLogging.logResponse(uid, rawResponse);
 
         System.out.println("Raw response:");
         System.out.println(rawResponse);
 
         if (rawResponse.startsWith("InvalidPrompt:")) {
 //            System.out.println("Debug: Invalid prompt received. Prompt: " + prompt);
-            promptLogging.logResponse("Invalid prompt received. Prompt: " + prompt);
-            return new ProcessedChoice("", "", rawResponse);
+            return new ProcessedChoice("", "", rawResponse, uid);
         }
 
-        ProcessedChoice processedChoice = getFunctionFromGPT(rawResponse);
+        ProcessedChoice processedChoice = getFunctionFromGPT(rawResponse, uid);
         System.out.println("Processed function definition:");
         System.out.println(processedChoice.getDef());
         System.out.println("Processed function code:");
@@ -64,11 +65,13 @@ public class OpenAIClient {
         private final String def;
         private final String code;
         private final String raw;
+        private final String uid;
 
-        public ProcessedChoice(String def, String code, String raw) {
+        public ProcessedChoice(String def, String code, String raw, String uid) {
             this.def = def;
             this.code = code;
             this.raw = raw;
+            this.uid = uid;
         }
 
         public String getDef() {
@@ -82,17 +85,21 @@ public class OpenAIClient {
         public String getRaw() {
             return raw;
         }
+
+        public String getUid() {
+            return uid;
+        }
     }
 
-    private ProcessedChoice getFunctionFromGPT(String gptRes) {
+    private ProcessedChoice getFunctionFromGPT(String gptRes, String uid) {
         String[] parts = gptRes.split("# Start");
         if (parts.length < 2) {
-            return new ProcessedChoice("", "", "No function found with # Start and # End comments");
+            return new ProcessedChoice("", "", "No function found with # Start and # End comments", uid);
         }
         String afterStart = parts[1];
         String[] codeParts = afterStart.split("# End");
         if (codeParts.length == 0) {
-            return new ProcessedChoice("", "", "No function found with # Start and # End comments");
+            return new ProcessedChoice("", "", "No function found with # Start and # End comments", uid);
         }
         String codeContent = codeParts[0].trim();
         String[] lines = codeContent.split("\\n");
@@ -104,9 +111,9 @@ public class OpenAIClient {
             }
         }
         if (codeDef == null) {
-            return new ProcessedChoice("", "", "Unable to find the function definition");
+            return new ProcessedChoice("", "", "Unable to find the function definition", uid);
         }
-        return new ProcessedChoice(codeDef, codeContent, gptRes);
+        return new ProcessedChoice(codeDef, codeContent, gptRes, uid);
     }
 
     private static String generateInstructions(String text) {
