@@ -46,7 +46,8 @@ public class OpenAIClient {
         System.out.println(rawResponse);
 
         if (rawResponse.startsWith("InvalidPrompt:")) {
-            System.out.println("Debug: Invalid prompt received. Prompt: " + prompt);
+//            System.out.println("Debug: Invalid prompt received. Prompt: " + prompt);
+            promptLogging.logResponse("Invalid prompt received. Prompt: " + prompt);
             return new ProcessedChoice("", "", rawResponse);
         }
 
