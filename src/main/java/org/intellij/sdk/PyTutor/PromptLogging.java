@@ -36,12 +36,12 @@ public class PromptLogging {
         sendLogRequest(requestBody);
     }
 
-//    public void logInteraction(String id, String interaction) {
-//        logId = id;
-//        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Interaction: %s\"}", escapeJson(id), escapeJson(interaction));
-//        sendLogRequest(requestBody);
-//    }
-//
+    public void logInteraction(String id, String interaction) {
+        logId = id;
+        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Response: %s\"}", escapeJson(id), escapeJson(interaction));
+        sendLogRequest(requestBody);
+    }
+
     public void logDeletion(String id, String deletion) {
         logId = id;
         String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Deletion: %s\"}", escapeJson(id), escapeJson(deletion));

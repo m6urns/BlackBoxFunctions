@@ -51,11 +51,12 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     private final FunctionManager functionManager;
     private final Map<String, String> functionPrompts = new HashMap<>();
     private final PromptLogging promptLogging = new PromptLogging();
-
+    private final String sessionId;
 
     public PyTutorWindowContent(ToolWindow toolWindow, Project project, FunctionManager functionManager) {
       this.project = project;
       this.functionManager = functionManager;
+      this.sessionId = generateSessionId();
 
       contentPanel.setLayout(new GridBagLayout());
       GridBagConstraints constraints = new GridBagConstraints();
@@ -169,7 +170,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       docLabel.addMouseListener(new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
-//          promptLogging.logInteraction("Documentation link clicked");
+          promptLogging.logInteraction(sessionId, "Clicked help link");
           JFrame docFrame = new JFrame("Using the PyTutor Plugin");
           JTextArea docArea = new JTextArea();
           docArea.setEditable(false);
@@ -221,6 +222,10 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
     public void setStatus(String status) {
       statusLabel.setText(status);
+    }
+
+    private String generateSessionId() {
+      return java.util.UUID.randomUUID().toString();
     }
 
     private void addSubmittedTextBox(String text, String functionName) {
