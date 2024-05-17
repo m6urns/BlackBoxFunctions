@@ -48,6 +48,12 @@ public class PromptLogging {
         sendLogRequest(requestBody);
     }
 
+    public void logSession(String id, String session) {
+        logId = id;
+        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Session: %s\"}", escapeJson(id), escapeJson(session));
+        sendLogRequest(requestBody);
+    }
+
     private void sendLogRequest(String requestBody) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()

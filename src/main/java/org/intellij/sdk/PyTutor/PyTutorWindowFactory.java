@@ -107,6 +107,10 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         System.out.println("Function name: " + functionName);
         addSubmittedTextBox(functionDefinition, functionName);
       }
+
+      // Send the session ID and UIDs to the logging server
+      String uids = String.join(",", functionUIDs);
+      promptLogging.logSession(sessionId, uids);
     }
 
     // TODO: Get the cursor position correct here. Maybe a border issue?
