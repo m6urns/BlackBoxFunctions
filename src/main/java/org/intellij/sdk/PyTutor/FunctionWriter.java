@@ -24,8 +24,10 @@ public class FunctionWriter {
             try {
                 String functionName = extractFunctionName(functionDefinition);
                 compilePyFile(project, functionName, functionCode);
-//                String commentedPrompt = "# Prompt: " + prompt + "\n";
-                String commentedFunctionDefinition = "# " + functionDefinition + " # Prompt: " + prompt + " # UID: " + uid + "\n";
+
+                String strippedPrompt = prompt.replace("\n", " ").replace("\r", "");
+
+                String commentedFunctionDefinition = "# " + functionDefinition + " # Prompt: " + strippedPrompt + " # UID: " + uid + "\n";
                 String functionDefinitionInGeneratedFile = String.format("def %s(*args, **kwargs):\n    from %s import %s\n    return %s(*args, **kwargs)\n\n", functionName, functionName, functionName, functionName);
                 Files.writeString(generatedFunctionsFilePath, commentedFunctionDefinition, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 //                Files.writeString(generatedFunctionsFilePath, commentedFunctionDefinition, StandardOpenOption.APPEND);
