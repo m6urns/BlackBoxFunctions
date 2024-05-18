@@ -45,18 +45,16 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     private final JPanel contentPanel = new JPanel();
     private final JTextArea textArea = new JBTextArea();
     private final JPanel submittedTextPanel = new JPanel(new GridLayout(0, 1, 0, 10));
-    private final OpenAIClient openAIClient = new OpenAIClient();
+    private final PromptLogging promptLogging = new PromptLogging();
+    private final OpenAIClient openAIClient = new OpenAIClient(promptLogging);
     private final JLabel statusLabel = new JLabel();
     private final Project project;
     private final FunctionManager functionManager;
     private final Map<String, String> functionPrompts = new HashMap<>();
-    private final PromptLogging promptLogging = new PromptLogging();
-    private final String sessionId;
 
     public PyTutorWindowContent(ToolWindow toolWindow, Project project, FunctionManager functionManager) {
       this.project = project;
       this.functionManager = functionManager;
-      this.sessionId = generateSessionId();
 
       contentPanel.setLayout(new GridBagLayout());
       GridBagConstraints constraints = new GridBagConstraints();
@@ -110,7 +108,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       // Send the session ID and UIDs to the logging server
       String uids = String.join(",", functionUIDs);
-      promptLogging.logSession(sessionId, uids);
+      promptLogging.logSession(uids);
     }
 
     // TODO: Get the cursor position correct here. Maybe a border issue?
@@ -174,7 +172,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       docLabel.addMouseListener(new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
-          promptLogging.logInteraction(sessionId, "Clicked help link");
+          promptLogging.logInteraction("Clicked help link");
           JFrame docFrame = new JFrame("Using the PyTutor Plugin");
           JTextArea docArea = new JTextArea();
           docArea.setEditable(false);
@@ -226,10 +224,6 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
     public void setStatus(String status) {
       statusLabel.setText(status);
-    }
-
-    private String generateSessionId() {
-      return java.util.UUID.randomUUID().toString();
     }
 
     private void addSubmittedTextBox(String text, String functionName) {

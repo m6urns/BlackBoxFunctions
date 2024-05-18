@@ -13,7 +13,7 @@ public class PromptLogging {
     private static final String LOGGING_API_KEY_PROPERTY = "LOGGING_API_KEY";
     private final String loggingApiUrl;
     private final String loggingApiKey;
-    private String logId;
+    private final String sessionId;
 
     public PromptLogging() {
         Properties properties = readPropertiesFromResources();
@@ -22,35 +22,44 @@ public class PromptLogging {
         if (loggingApiUrl == null || loggingApiUrl.isEmpty() || loggingApiKey == null || loggingApiKey.isEmpty()) {
             throw new IllegalStateException("Logging API URL or API key not found in pytutor.properties file");
         }
+        this.sessionId = generateSessionId();
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public String generateSessionId() {
+        return java.util.UUID.randomUUID().toString();
     }
 
     public void logPrompt(String id, String prompt) {
-        logId = id;
-        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Prompt: %s\"}", escapeJson(id), escapeJson(prompt));
+        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Prompt (%s): %s\"}",
+                escapeJson(getSessionId()), escapeJson(id), escapeJson(prompt));
         sendLogRequest(requestBody);
     }
 
     public void logResponse(String id, String response) {
-        logId = id;
-        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Response: %s\"}", escapeJson(id), escapeJson(response));
+        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Response (%s): %s\"}",
+                escapeJson(getSessionId()), escapeJson(id), escapeJson(response));
         sendLogRequest(requestBody);
     }
 
-    public void logInteraction(String id, String interaction) {
-        logId = id;
-        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Response: %s\"}", escapeJson(id), escapeJson(interaction));
+    public void logInteraction(String interaction) {
+        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Response: %s\"}",
+                escapeJson(getSessionId()), escapeJson(interaction));
         sendLogRequest(requestBody);
     }
 
     public void logDeletion(String id, String deletion) {
-        logId = id;
-        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Deletion: %s\"}", escapeJson(id), escapeJson(deletion));
+        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Deletion (%s): %s\"}",
+                escapeJson(getSessionId()), escapeJson(id), escapeJson(deletion));
         sendLogRequest(requestBody);
     }
 
-    public void logSession(String id, String session) {
-        logId = id;
-        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Session: %s\"}", escapeJson(id), escapeJson(session));
+    public void logSession(String session) {
+        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Session: %s\"}",
+                escapeJson(getSessionId()), escapeJson(session));
         sendLogRequest(requestBody);
     }
 

@@ -16,10 +16,10 @@ public class OpenAIClient {
     private final BaseSimpleOpenAI openAI;
     private final PromptLogging promptLogging;
 
-    public OpenAIClient() {
+    public OpenAIClient(PromptLogging promptLogging) {
         String apiKey = readApiKeyFromResources();
         this.openAI = SimpleOpenAI.builder().apiKey(apiKey).build();
-        this.promptLogging = new PromptLogging();
+        this.promptLogging = promptLogging;
     }
 
     public ProcessedChoice sendPromptToOpenAI(String prompt) {
@@ -37,12 +37,14 @@ public class OpenAIClient {
                 .build();
 
         promptLogging.logPrompt(uid, prompt);
+//        promptLogging.logPrompt(promptLogging.getSessionId(), prompt);
 
         var futureChat = openAI.chatCompletions().create(chatRequest);
         var chatResponse = futureChat.join();
         String rawResponse = chatResponse.firstContent();
 
         promptLogging.logResponse(uid, rawResponse);
+//        promptLogging.logResponse(promptLogging.getSessionId(), rawResponse);
 
         System.out.println("Raw response:");
         System.out.println(rawResponse);
