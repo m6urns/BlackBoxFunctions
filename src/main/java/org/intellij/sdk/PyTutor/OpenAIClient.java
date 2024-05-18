@@ -37,14 +37,12 @@ public class OpenAIClient {
                 .build();
 
         promptLogging.logPrompt(uid, prompt);
-//        promptLogging.logPrompt(promptLogging.getSessionId(), prompt);
 
         var futureChat = openAI.chatCompletions().create(chatRequest);
         var chatResponse = futureChat.join();
         String rawResponse = chatResponse.firstContent();
 
         promptLogging.logResponse(uid, rawResponse);
-//        promptLogging.logResponse(promptLogging.getSessionId(), rawResponse);
 
         System.out.println("Raw response:");
         System.out.println(rawResponse);

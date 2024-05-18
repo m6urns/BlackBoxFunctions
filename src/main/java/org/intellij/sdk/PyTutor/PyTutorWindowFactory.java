@@ -111,7 +111,6 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       promptLogging.logSession(uids);
     }
 
-    // TODO: Get the cursor position correct here. Maybe a border issue?
     @NotNull
     private JPanel createTextBoxPanel() {
       JPanel textBoxPanel = new JPanel(new GridBagLayout());
