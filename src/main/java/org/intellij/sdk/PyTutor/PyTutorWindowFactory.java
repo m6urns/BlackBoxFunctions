@@ -178,7 +178,10 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
           docArea.setText("Importing your generated functions\n\n" +
                   "You can add your generated functions to your Python code by importing the generated_functions module.\n" +
                     "You can import all of the functions you create by adding the following line to the top of your .py file:\n\n" +
-                    "from generated_functions import *\n\n");
+                    "from generated_functions import *\n\n"+
+                  "Tips for Generating Useful Functions\n\n" +
+                  "Describe the function you wan to generate. Include what data and type of data will be passed to the function, and what the function should return.\n\n" +
+                  "Include a name for the function, for example add_item or remove_item.\n\n");
           docFrame.add(new JScrollPane(docArea), BorderLayout.CENTER);
           docFrame.setSize(750, 200);
           docFrame.setLocationRelativeTo(null);
@@ -249,6 +252,15 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       String prompt = functionPrompts.get(functionName);
       if (prompt != null) {
         submittedTextPanel.setToolTipText("Prompt: " + prompt);
+
+        // Add mouse listener to recall the prompt on click
+        submittedTextArea.addMouseListener(new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            textArea.setText(prompt);
+            setStatus("Prompt for function '" + functionName + "' loaded for editing.");
+          }
+        });
       } else {
         System.out.println("No prompt found for function '" + functionName + "'");
       }
@@ -296,6 +308,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         }
       });
     }
+
 
     private void updateUI() {
       SwingUtilities.invokeLater(() -> {
