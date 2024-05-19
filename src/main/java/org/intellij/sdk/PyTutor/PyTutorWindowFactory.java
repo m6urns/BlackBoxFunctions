@@ -58,37 +58,23 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       this.project = project;
       this.functionManager = functionManager;
 
-      contentPanel.setLayout(new GridBagLayout());
-      GridBagConstraints constraints = new GridBagConstraints();
-      constraints.fill = GridBagConstraints.BOTH;
-      constraints.weightx = 1.0;
-      constraints.weighty = 0.2;
-      contentPanel.add(createTextBoxPanel(), constraints);
+      contentPanel.setLayout(new BorderLayout());
+      contentPanel.add(createTextBoxPanel(), BorderLayout.NORTH);
 
-      constraints.gridy = 1;
-      constraints.weighty = 0.05;
-      contentPanel.add(createControlsPanel(toolWindow), constraints);
+      // Creating a panel to hold both the controls and the submitted text panel
+      JPanel centerPanel = new JPanel(new BorderLayout());
+      centerPanel.add(createControlsPanel(toolWindow), BorderLayout.NORTH);
+      centerPanel.add(createSubmittedTextPanel(), BorderLayout.CENTER);
 
-      constraints.gridy = 2;
-      constraints.weighty = 0.02;
-      contentPanel.add(createDocumentationPanel(), constraints);
+      contentPanel.add(centerPanel, BorderLayout.CENTER);
+      contentPanel.add(createDocumentationPanel(), BorderLayout.SOUTH);
 
-      constraints.gridy = 3;
-      constraints.weighty = 0.7;
-      submittedTextPanel.setLayout(new BoxLayout(submittedTextPanel, BoxLayout.Y_AXIS));
-      JBScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextPanel);
-      submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-      submittedTextScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-      contentPanel.add(submittedTextScrollPane, constraints);
-
-      constraints.gridy = 4;
-      constraints.weighty = 0.1;
       statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
       statusLabel.setLineWrap(true);  // Enable line wrap
       statusLabel.setWrapStyleWord(true);  // Wrap at word boundaries
       statusLabel.setEditable(false);  // Make the text area non-editable
       statusLabel.setBackground(contentPanel.getBackground());  // Make background match the panel
-      contentPanel.add(statusLabel, constraints);
+      contentPanel.add(statusLabel, BorderLayout.SOUTH);
 
       // Load existing function prompts from generated_functions.py
       List<String> functionPrompts = functionManager.readFunctionPrompts(project);
@@ -119,29 +105,28 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
     @NotNull
     private JPanel createTextBoxPanel() {
-      JPanel textBoxPanel = new JPanel(new GridBagLayout());
-      GridBagConstraints constraints = new GridBagConstraints();
-      constraints.fill = GridBagConstraints.BOTH;
-      constraints.weightx = 1.0;
-      constraints.weighty = 0.2;
-      constraints.insets = JBUI.insets(10);
+      JPanel textBoxPanel = new JPanel(new BorderLayout());
+      textBoxPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
       textArea.setLineWrap(true);
       textArea.setWrapStyleWord(true);
+      textArea.setPreferredSize(new Dimension(400, 100));  // Set preferred size
 
       JBScrollPane scrollPane = new JBScrollPane(textArea);
       scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       scrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
 
       textArea.setCaretPosition(0);
-      textBoxPanel.add(scrollPane, constraints);
+      textBoxPanel.add(scrollPane, BorderLayout.CENTER);
 
       return textBoxPanel;
     }
 
     @NotNull
     private JPanel createControlsPanel(ToolWindow toolWindow) {
-      JPanel controlsPanel = new JPanel();
+      JPanel controlsPanel = new JPanel(new BorderLayout());
+      JPanel buttonsPanel = new JPanel();
+
       JButton submitButton = new JButton("Submit");
       submitButton.addActionListener(e -> {
         String text = textArea.getText();
@@ -150,7 +135,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         textArea.setText("");
         currentlyEditingFunctionName = null;
       });
-      controlsPanel.add(submitButton);
+      buttonsPanel.add(submitButton);
 
       JButton clearButton = new JButton("Clear");
       clearButton.addActionListener(e -> {
@@ -158,13 +143,80 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         currentlyEditingFunctionName = null;
         promptLogging.logInteraction("Cleared text area");
       });
-      controlsPanel.add(clearButton);
+      buttonsPanel.add(clearButton);
 
       JButton hideToolWindowButton = new JButton("Hide");
       hideToolWindowButton.addActionListener(e -> toolWindow.hide(null));
-      controlsPanel.add(hideToolWindowButton);
+      buttonsPanel.add(hideToolWindowButton);
+
+      controlsPanel.add(buttonsPanel, BorderLayout.NORTH);
+
+      // Center the links
+      JPanel linksPanel = new JPanel(new GridBagLayout());
+      GridBagConstraints gbc = new GridBagConstraints();
+      gbc.gridx = 0;
+      gbc.gridy = 0;
+      gbc.anchor = GridBagConstraints.CENTER;
+
+      JLabel docLabel = new JLabel("<html><u>How do I use these functions?</u></html>");
+      docLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+      docLabel.setForeground(Color.GRAY);
+      docLabel.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+          promptLogging.logInteraction("Clicked help link");
+          JFrame docFrame = new JFrame("Using the PyTutor Plugin");
+          JTextArea docArea = new JTextArea();
+          docArea.setEditable(false);
+          docArea.setText("Importing your generated functions\n\n" +
+                  "You can add your generated functions to your Python code by importing the generated_functions module.\n" +
+                  "You can import all of the functions you create by adding the following line to the top of your .py file:\n\n" +
+                  "from generated_functions import *\n\n"+
+                  "Tips for Generating Useful Functions\n\n" +
+                  "Describe the function you wan to generate. Include what data and type of data will be passed to the function, and what the function should return.\n\n" +
+                  "Include a name for the function, for example add_item or remove_item.\n\n");
+          docFrame.add(new JScrollPane(docArea), BorderLayout.CENTER);
+          docFrame.setSize(750, 200);
+          docFrame.setLocationRelativeTo(null);
+          docFrame.setVisible(true);
+        }
+      });
+
+      JLabel copyLabel = new JLabel("<html><u>Copy import statement to clipboard</u></html>");
+      copyLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+      copyLabel.setForeground(Color.GRAY);
+      copyLabel.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+          promptLogging.logInteraction("Clicked copy import statement");
+          String exampleFunction = "from generated_functions import *";
+          StringSelection selection = new StringSelection(exampleFunction);
+          Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+          clipboard.setContents(selection, selection);
+          setStatus("Import statement copied to clipboard. Paste into your Python file.");
+        }
+      });
+
+      linksPanel.add(docLabel, gbc);
+      gbc.gridy = 1; // Move to next row
+      linksPanel.add(copyLabel, gbc);
+      controlsPanel.add(linksPanel, BorderLayout.CENTER);
 
       return controlsPanel;
+    }
+
+
+    @NotNull
+    private JPanel createSubmittedTextPanel() {
+      submittedTextPanel.setLayout(new BoxLayout(submittedTextPanel, BoxLayout.Y_AXIS));
+      JBScrollPane submittedTextScrollPane = new JBScrollPane(submittedTextPanel);
+      submittedTextScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+      submittedTextScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+      JPanel panel = new JPanel(new BorderLayout());
+      panel.add(submittedTextScrollPane, BorderLayout.CENTER);
+
+      return panel;
     }
 
     @NotNull
@@ -220,7 +272,6 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       return outerPanel;
     }
-
 
     private void sendPromptToOpenAI(String prompt) {
       setStatus("Sending prompt to OpenAI...");
