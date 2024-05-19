@@ -34,32 +34,32 @@ public class PromptLogging {
     }
 
     public void logPrompt(String id, String prompt) {
-        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Prompt (%s): %s\"}",
-                escapeJson(getSessionId()), escapeJson(id), escapeJson(prompt));
+        String requestBody = String.format("{\"EventType\": \"Prompt\", \"AssignmentID\": \"%s\", \"SubjectID\": \"%s\", \"Entry\": \"Prompt\", \"ClientTimestamp\": \"%d\", \"X-Metadata\": \"%s\"}",
+                escapeJson(getSessionId()), escapeJson(id), System.currentTimeMillis(), escapeJson(prompt));
         sendLogRequest(requestBody);
     }
 
     public void logResponse(String id, String response) {
-        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Response (%s): %s\"}",
-                escapeJson(getSessionId()), escapeJson(id), escapeJson(response));
+        String requestBody = String.format("{\"EventType\": \"Response\", \"AssignmentID\": \"%s\", \"SubjectID\": \"%s\", \"Entry\": \"Response\", \"ClientTimestamp\": \"%d\", \"X-Metadata\": \"%s\"}",
+                escapeJson(getSessionId()), escapeJson(id), System.currentTimeMillis(), escapeJson(response));
         sendLogRequest(requestBody);
     }
 
     public void logInteraction(String interaction) {
-        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Response: %s\"}",
-                escapeJson(getSessionId()), escapeJson(interaction));
+        String requestBody = String.format("{\"EventType\": \"Interaction\", \"AssignmentID\": \"%s\", \"Entry\": \"Interaction\", \"ClientTimestamp\": \"%d\"}",
+                escapeJson(getSessionId()), System.currentTimeMillis());
         sendLogRequest(requestBody);
     }
 
     public void logDeletion(String id, String deletion) {
-        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Deletion (%s): %s\"}",
-                escapeJson(getSessionId()), escapeJson(id), escapeJson(deletion));
+        String requestBody = String.format("{\"EventType\": \"Deletion\", \"AssignmentID\": \"%s\", \"SubjectID\": \"%s\", \"Entry\": \"Deletion\", \"ClientTimestamp\": \"%d\"}",
+                escapeJson(getSessionId()), escapeJson(id), System.currentTimeMillis());
         sendLogRequest(requestBody);
     }
 
     public void logSession(String session) {
-        String requestBody = String.format("{\"id\": \"%s\", \"entry\": \"Session: %s\"}",
-                escapeJson(getSessionId()), escapeJson(session));
+        String requestBody = String.format("{\"EventType\": \"Session\", \"AssignmentID\": \"%s\", \"Entry\": \"Session\", \"ClientTimestamp\": \"%d\", \"X-Metadata\": \"%s\"}",
+                escapeJson(getSessionId()), System.currentTimeMillis(), escapeJson(session));
         sendLogRequest(requestBody);
     }
 
