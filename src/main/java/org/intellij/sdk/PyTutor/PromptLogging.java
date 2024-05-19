@@ -46,14 +46,14 @@ public class PromptLogging {
     }
 
     public void logInteraction(String interaction) {
-        String requestBody = String.format("{\"EventType\": \"Interaction\", \"AssignmentID\": \"%s\", \"Entry\": \"Interaction\", \"ClientTimestamp\": \"%d\"}",
-                escapeJson(getSessionId()), System.currentTimeMillis());
+        String requestBody = String.format("{\"EventType\": \"Interaction\", \"AssignmentID\": \"%s\", \"Entry\": \"Interaction\", \"ClientTimestamp\": \"%d\", \"X-Metadata\": \"%s\"}",
+                escapeJson(getSessionId()), System.currentTimeMillis(), escapeJson(interaction));
         sendLogRequest(requestBody);
     }
 
     public void logDeletion(String id, String deletion) {
-        String requestBody = String.format("{\"EventType\": \"Deletion\", \"AssignmentID\": \"%s\", \"SubjectID\": \"%s\", \"Entry\": \"Deletion\", \"ClientTimestamp\": \"%d\"}",
-                escapeJson(getSessionId()), escapeJson(id), System.currentTimeMillis());
+        String requestBody = String.format("{\"EventType\": \"Deletion\", \"AssignmentID\": \"%s\", \"SubjectID\": \"%s\", \"Entry\": \"Deletion\", \"ClientTimestamp\": \"%d\", \"X-Metadata\": \"%s\"}",
+                escapeJson(getSessionId()), escapeJson(id), System.currentTimeMillis(), escapeJson(deletion));
         sendLogRequest(requestBody);
     }
 
