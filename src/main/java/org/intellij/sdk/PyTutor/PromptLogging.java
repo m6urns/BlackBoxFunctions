@@ -63,6 +63,12 @@ public class PromptLogging {
         sendLogRequest(requestBody);
     }
 
+    public void logRecall(String uid, String prompt) {
+        String requestBody = String.format("{\"EventType\": \"Recall\", \"AssignmentID\": \"%s\", \"SubjectID\": \"%s\", \"Entry\": \"Recall\", \"ClientTimestamp\": \"%d\", \"X-Metadata\": \"%s\"}",
+                escapeJson(getSessionId()), escapeJson(uid), System.currentTimeMillis(), escapeJson(prompt));
+        sendLogRequest(requestBody);
+    }
+
     private void sendLogRequest(String requestBody) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()

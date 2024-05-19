@@ -1,4 +1,3 @@
-// Based on implementation by Wesley Edwards: https://github.com/WesleyEdwards/PyTutor
 package org.intellij.sdk.PyTutor;
 
 import com.intellij.openapi.project.DumbAware;
@@ -11,6 +10,8 @@ import com.intellij.ui.content.Content;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
@@ -47,10 +48,11 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     private final JPanel submittedTextPanel = new JPanel(new GridLayout(0, 1, 0, 10));
     private final PromptLogging promptLogging = new PromptLogging();
     private final OpenAIClient openAIClient = new OpenAIClient(promptLogging);
-    private final JLabel statusLabel = new JLabel();
+    private final JTextArea statusLabel = new JTextArea();  // Changed from JLabel to JTextArea
     private final Project project;
     private final FunctionManager functionManager;
     private final Map<String, String> functionPrompts = new HashMap<>();
+    private String currentlyEditingFunctionName = null;
 
     public PyTutorWindowContent(ToolWindow toolWindow, Project project, FunctionManager functionManager) {
       this.project = project;
@@ -82,6 +84,10 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       constraints.gridy = 4;
       constraints.weighty = 0.1;
       statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+      statusLabel.setLineWrap(true);  // Enable line wrap
+      statusLabel.setWrapStyleWord(true);  // Wrap at word boundaries
+      statusLabel.setEditable(false);  // Make the text area non-editable
+      statusLabel.setBackground(contentPanel.getBackground());  // Make background match the panel
       contentPanel.add(statusLabel, constraints);
 
       // Load existing function prompts from generated_functions.py
@@ -142,12 +148,15 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         System.out.println("Prompt: " + text);
         sendPromptToOpenAI(text);
         textArea.setText("");
+        currentlyEditingFunctionName = null;
       });
       controlsPanel.add(submitButton);
 
       JButton clearButton = new JButton("Clear");
       clearButton.addActionListener(e -> {
         textArea.setText("");
+        currentlyEditingFunctionName = null;
+        promptLogging.logInteraction("Cleared text area");
       });
       controlsPanel.add(clearButton);
 
@@ -177,8 +186,8 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
           docArea.setEditable(false);
           docArea.setText("Importing your generated functions\n\n" +
                   "You can add your generated functions to your Python code by importing the generated_functions module.\n" +
-                    "You can import all of the functions you create by adding the following line to the top of your .py file:\n\n" +
-                    "from generated_functions import *\n\n"+
+                  "You can import all of the functions you create by adding the following line to the top of your .py file:\n\n" +
+                  "from generated_functions import *\n\n"+
                   "Tips for Generating Useful Functions\n\n" +
                   "Describe the function you wan to generate. Include what data and type of data will be passed to the function, and what the function should return.\n\n" +
                   "Include a name for the function, for example add_item or remove_item.\n\n");
@@ -189,20 +198,47 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         }
       });
 
+      JLabel copyLabel = new JLabel("<html><u>Copy import statement to clipboard</u></html>");
+      copyLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+      copyLabel.setForeground(Color.GRAY);
+      copyLabel.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+          promptLogging.logInteraction("Clicked copy import statement");
+          String exampleFunction = "from generated_functions import *";
+          StringSelection selection = new StringSelection(exampleFunction);
+          Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+          clipboard.setContents(selection, selection);
+          setStatus("Import statement copied to clipboard. Paste into your Python file.");
+        }
+      });
+
       innerPanel.add(docLabel, constraints);
+      constraints.gridy = 1; // Move to next row
+      innerPanel.add(copyLabel, constraints);
       outerPanel.add(innerPanel, BorderLayout.CENTER);
 
       return outerPanel;
     }
 
+
     private void sendPromptToOpenAI(String prompt) {
       setStatus("Sending prompt to OpenAI...");
+
+      // Check if currently editing a function and delete it
+      if (currentlyEditingFunctionName != null) {
+        deleteFunction(currentlyEditingFunctionName);
+        currentlyEditingFunctionName = null;
+      }
+
+      // Send the prompt to OpenAI and process the response
       OpenAIClient.ProcessedChoice processedChoice = openAIClient.sendPromptToOpenAI(prompt);
       String codeDef = processedChoice.getDef();
       String codeContent = processedChoice.getCode();
       String rawResponse = processedChoice.getRaw();
       String uid = processedChoice.getUid();
 
+      // Handle the response from OpenAI
       if (rawResponse.startsWith("InvalidPrompt:")) {
         String errorMessage = "Error: " + rawResponse;
         System.out.println(errorMessage);
@@ -226,6 +262,28 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
     public void setStatus(String status) {
       statusLabel.setText(status);
+    }
+
+    private void deleteFunction(String functionName) {
+      System.out.println("Deleting function '" + functionName + "'");
+      String uid = functionManager.getFunctionUIDs(project, functionName);
+      functionManager.deleteFunction(project, functionName);
+
+      // Remove the function's UI component
+      for (Component comp : submittedTextPanel.getComponents()) {
+        if (comp instanceof JPanel) {
+          JPanel containerPanel = (JPanel) comp;
+          JTextArea textArea = (JTextArea) ((JScrollPane) ((BorderLayout) ((JPanel) containerPanel.getComponent(0)).getLayout()).getLayoutComponent(BorderLayout.CENTER)).getViewport().getView();
+          if (textArea.getText().contains(functionName)) {
+            submittedTextPanel.remove(containerPanel);
+            break;
+          }
+        }
+      }
+      functionPrompts.remove(functionName);
+      promptLogging.logDeletion(uid, functionName);
+      updateUI();
+      setStatus("Function '" + functionName + "' removed successfully.");
     }
 
     private void addSubmittedTextBox(String text, String functionName) {
@@ -258,7 +316,10 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
           @Override
           public void mouseClicked(MouseEvent e) {
             textArea.setText(prompt);
+            currentlyEditingFunctionName = functionName;
             setStatus("Prompt for function '" + functionName + "' loaded for editing.");
+            String uid = functionManager.getFunctionUIDs(project, functionName);
+            promptLogging.logRecall(uid, prompt);
           }
         });
       } else {
@@ -275,14 +336,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       JButton deleteButton = new JButton("X");
       deleteButton.setPreferredSize(new Dimension(30, 40));
       deleteButton.setMargin(new Insets(0, 0, 0, 0));
-      deleteButton.addActionListener(e -> {
-        String uid = functionManager.getFunctionUIDs(project, functionName);
-        functionManager.deleteFunction(project, functionName);
-        this.submittedTextPanel.remove(containerPanel);
-        promptLogging.logDeletion(uid, functionName);
-        updateUI();
-        setStatus("Function '" + functionName + "' removed successfully.");
-      });
+      deleteButton.addActionListener(e -> deleteFunction(functionName));
 
       JPanel buttonPanel = new JPanel(new BorderLayout());
       buttonPanel.add(deleteButton, BorderLayout.SOUTH);
@@ -308,7 +362,6 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         }
       });
     }
-
 
     private void updateUI() {
       SwingUtilities.invokeLater(() -> {
