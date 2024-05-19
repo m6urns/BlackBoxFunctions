@@ -7,7 +7,6 @@ import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.ui.content.Content;
-import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.datatransfer.Clipboard;
@@ -193,7 +192,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
           StringSelection selection = new StringSelection(exampleFunction);
           Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
           clipboard.setContents(selection, selection);
-          setStatus("Import statement copied to clipboard. Paste into your Python file.");
+          setStatus("Import statement copied to clipboard. Paste into your Python file to use your generated functions.");
         }
       });
 
@@ -366,6 +365,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         submittedTextArea.addMouseListener(new MouseAdapter() {
           @Override
           public void mouseClicked(MouseEvent e) {
+            textArea.setText("");
             textArea.setText(prompt);
             currentlyEditingFunctionName = functionName;
             setStatus("Prompt for function '" + functionName + "' loaded for editing.");
