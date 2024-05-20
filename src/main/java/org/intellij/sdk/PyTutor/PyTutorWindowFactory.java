@@ -70,7 +70,6 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       centerPanel.add(createSubmittedTextPanel(), BorderLayout.CENTER);
 
       contentPanel.add(centerPanel, BorderLayout.CENTER);
-      contentPanel.add(createDocumentationPanel(), BorderLayout.SOUTH);
 
       statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
       statusLabel.setLineWrap(true);  // Enable line wrap
@@ -156,56 +155,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       controlsPanel.add(buttonsPanel, BorderLayout.NORTH);
 
-      // Center the links
-      JPanel linksPanel = new JPanel(new GridBagLayout());
-      GridBagConstraints gbc = new GridBagConstraints();
-      gbc.gridx = 0;
-      gbc.gridy = 0;
-      gbc.anchor = GridBagConstraints.CENTER;
-
-      JLabel docLabel = new JLabel("<html><u>How do I use these functions?</u></html>");
-      docLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-      docLabel.setForeground(Color.GRAY);
-      docLabel.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-          promptLogging.logInteraction("Clicked help link");
-          JFrame docFrame = new JFrame("Using the PyTutor Plugin");
-          JTextArea docArea = new JTextArea();
-          docArea.setEditable(false);
-          docArea.setText("Importing your generated functions\n\n" +
-                  "You can add your generated functions to your Python code by importing the generated_functions module.\n" +
-                  "You can import all of the functions you create by adding the following line to the top of your .py file:\n\n" +
-                  "from generated_functions import *\n\n"+
-                  "Tips for Generating Useful Functions\n\n" +
-                  "Describe the function you wan to generate. Include what data and type of data will be passed to the function, and what the function should return.\n\n" +
-                  "Include a name for the function, for example add_item or remove_item.\n\n");
-          docFrame.add(new JScrollPane(docArea), BorderLayout.CENTER);
-          docFrame.setSize(750, 200);
-          docFrame.setLocationRelativeTo(null);
-          docFrame.setVisible(true);
-        }
-      });
-
-      JLabel copyLabel = new JLabel("<html><u>Copy import statement to clipboard</u></html>");
-      copyLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-      copyLabel.setForeground(Color.GRAY);
-      copyLabel.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-          promptLogging.logInteraction("Clicked copy import statement");
-          String exampleFunction = "from generated_functions import *";
-          StringSelection selection = new StringSelection(exampleFunction);
-          Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-          clipboard.setContents(selection, selection);
-          setStatus("Import statement copied to clipboard. Paste into your Python file to use your generated functions.");
-        }
-      });
-
-      linksPanel.add(docLabel, gbc);
-      gbc.gridy = 1; // Move to next row
-      linksPanel.add(copyLabel, gbc);
-      controlsPanel.add(linksPanel, BorderLayout.CENTER);
+      controlsPanel.add(createDocumentationPanel(), BorderLayout.SOUTH);
 
       return controlsPanel;
     }
