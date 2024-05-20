@@ -107,6 +107,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       promptLogging.logSession(uids);
     }
 
+
     @NotNull
     private JPanel createTextBoxPanel() {
       JPanel textBoxPanel = new JPanel(new BorderLayout());
@@ -114,18 +115,23 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       textArea.setLineWrap(true);
       textArea.setWrapStyleWord(true);
-      textArea.setPreferredSize(new Dimension(400, 100));  // Set preferred size
       textArea.setFont(new Font(FONT_FAMILY, Font.PLAIN, FONT_SIZE));
+
+      // Set the preferred size for the textArea
+      textArea.setPreferredSize(new Dimension(400, 1500));
 
       JBScrollPane scrollPane = new JBScrollPane(textArea);
       scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+      scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED); // Ensure vertical scroll bar appears as needed
       scrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
+      scrollPane.setPreferredSize(new Dimension(400, 100));
 
-      textArea.setCaretPosition(0);
       textBoxPanel.add(scrollPane, BorderLayout.CENTER);
 
       return textBoxPanel;
     }
+
+
 
     @NotNull
     private JPanel createControlsPanel(ToolWindow toolWindow) {
@@ -345,7 +351,6 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextScrollPane.setOpaque(false);
       submittedTextScrollPane.getViewport().setOpaque(false);
 
-      // Create the delete button with an icon
       JButton deleteButton = new JButton(AllIcons.Actions.GC);
       deleteButton.setPreferredSize(new Dimension(30, 42));
       deleteButton.setMargin(new Insets(0, 0, 0, 0));
