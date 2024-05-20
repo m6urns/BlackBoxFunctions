@@ -198,12 +198,13 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
           JFrame docFrame = new JFrame("Using the PyTutor Plugin");
           JTextArea docArea = new JTextArea();
           docArea.setEditable(false);
+          docArea.setFont(new Font(FONT_FAMILY, Font.PLAIN, FONT_SIZE));
           docArea.setText("Importing your generated functions\n\n" +
                   "You can add your generated functions to your Python code by importing the generated_functions module.\n" +
                   "You can import all of the functions you create by adding the following line to the top of your .py file:\n\n" +
                   "from generated_functions import *\n\n");
           docFrame.add(new JScrollPane(docArea), BorderLayout.CENTER);
-          docFrame.setSize(750, 200);
+          docFrame.setSize(800, 200);
           docFrame.setLocationRelativeTo(null);
           docFrame.setVisible(true);
         }
