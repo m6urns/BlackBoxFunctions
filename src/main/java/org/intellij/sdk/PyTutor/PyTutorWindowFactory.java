@@ -52,6 +52,8 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     private final FunctionManager functionManager;
     private final Map<String, String> functionPrompts = new HashMap<>();
     private String currentlyEditingFunctionName = null;
+    private static final Integer FONT_SIZE = 14;
+    private static final String FONT_FAMILY = "Arial";
 
     public PyTutorWindowContent(ToolWindow toolWindow, Project project, FunctionManager functionManager) {
       this.project = project;
@@ -75,7 +77,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       statusLabel.setWrapStyleWord(true);  // Wrap at word boundaries
       statusLabel.setEditable(false);  // Make the text area non-editable
       statusLabel.setBackground(contentPanel.getBackground());  // Make background match the panel
-      statusLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+      statusLabel.setFont(new Font(FONT_FAMILY, Font.PLAIN, FONT_SIZE));
       contentPanel.add(statusLabel, BorderLayout.SOUTH);
 
       // Load existing function prompts from generated_functions.py
@@ -113,7 +115,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       textArea.setLineWrap(true);
       textArea.setWrapStyleWord(true);
       textArea.setPreferredSize(new Dimension(400, 100));  // Set preferred size
-      textArea.setFont(new Font("Arial", Font.PLAIN, 14));
+      textArea.setFont(new Font(FONT_FAMILY, Font.PLAIN, FONT_SIZE));
 
       JBScrollPane scrollPane = new JBScrollPane(textArea);
       scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -356,7 +358,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextPanel.setBorder(BorderFactory.createCompoundBorder(
               BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY),
               BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-      submittedTextPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50)); // Set a maximum height for the panel
+      submittedTextPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 55)); // Set a maximum height for the panel
 
       String functionDefinition = text.replace("def ", "");
 
@@ -366,7 +368,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextArea.setWrapStyleWord(true);
       submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
       submittedTextArea.setBackground(null);
-      submittedTextArea.setFont(new Font("Arial", Font.PLAIN, 14));
+      submittedTextArea.setFont(new Font(FONT_FAMILY, Font.PLAIN, FONT_SIZE));
 
       String prompt = functionPrompts.get(functionName);
       if (prompt != null) {
