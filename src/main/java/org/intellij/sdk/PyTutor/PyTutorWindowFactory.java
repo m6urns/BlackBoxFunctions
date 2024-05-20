@@ -251,12 +251,14 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       // Handle the response from OpenAI
       if (rawResponse.startsWith("InvalidPrompt:")) {
-        String errorMessage = "Error: " + rawResponse;
+//        String errorMessage = "Error: " + rawResponse;
+        String errorMessage = "Error: Invalid Prompt";
         System.out.println(errorMessage);
         setStatus(errorMessage);
       } else {
         if (codeDef.isEmpty() && codeContent.isEmpty()) {
-          String errorMessage = "Error: " + rawResponse;
+//          String errorMessage = "Error: " + rawResponse;
+          String errorMessage = "Error: Empty Response Received";
           System.out.println(errorMessage);
           setStatus(errorMessage);
         } else {
