@@ -39,7 +39,7 @@ public class PromptLogging {
     public void logPrompt(String id, String prompt) {
         String requestBody = String.format("{\"EventType\": \"Prompt\", \"AssignmentID\": \"%s\", \"SubjectID\": \"%s\", \"Entry\": \"Prompt\", \"ClientTimestamp\": \"%d\", \"X-Metadata\": \"%s\"}",
                 escapeJson(getSessionId()), escapeJson(id), System.currentTimeMillis(), escapeJson(prompt));
-        appendToLocalLog("Prompt", "", "", "", System.currentTimeMillis(), "", "", "", prompt, "", "", "", id, getSessionId());
+//        appendToLocalLog("Prompt", "", "", "", System.currentTimeMillis(), "", "", "", prompt, "", "", "", id, getSessionId());
         sendLogRequest(requestBody);
     }
 
@@ -52,12 +52,14 @@ public class PromptLogging {
     public void logInteraction(String interaction) {
         String requestBody = String.format("{\"EventType\": \"Interaction\", \"AssignmentID\": \"%s\", \"Entry\": \"Interaction\", \"ClientTimestamp\": \"%d\", \"X-Metadata\": \"%s\"}",
                 escapeJson(getSessionId()), System.currentTimeMillis(), escapeJson(interaction));
+//        appendToLocalLog("Interaction", "", "", "", System.currentTimeMillis(), "", "", "", interaction, "", "", "", "", getSessionId());
         sendLogRequest(requestBody);
     }
 
     public void logDeletion(String id, String deletion) {
         String requestBody = String.format("{\"EventType\": \"Deletion\", \"AssignmentID\": \"%s\", \"SubjectID\": \"%s\", \"Entry\": \"Deletion\", \"ClientTimestamp\": \"%d\", \"X-Metadata\": \"%s\"}",
                 escapeJson(getSessionId()), escapeJson(id), System.currentTimeMillis(), escapeJson(deletion));
+//        appendToLocalLog("Deletion", "", "", "", System.currentTimeMillis(), "", "", "", deletion, "", "", "", id, getSessionId());
         sendLogRequest(requestBody);
     }
 
@@ -67,9 +69,10 @@ public class PromptLogging {
         sendLogRequest(requestBody);
     }
 
-    public void logRecall(String uid, String prompt) {
+    public void logRecall(String id, String prompt) {
         String requestBody = String.format("{\"EventType\": \"Recall\", \"AssignmentID\": \"%s\", \"SubjectID\": \"%s\", \"Entry\": \"Recall\", \"ClientTimestamp\": \"%d\", \"X-Metadata\": \"%s\"}",
-                escapeJson(getSessionId()), escapeJson(uid), System.currentTimeMillis(), escapeJson(prompt));
+                escapeJson(getSessionId()), escapeJson(id), System.currentTimeMillis(), escapeJson(prompt));
+//        appendToLocalLog("Recall", "", "", "", System.currentTimeMillis(), "", "", "", prompt, "", "", "", id, getSessionId());
         sendLogRequest(requestBody);
     }
 
