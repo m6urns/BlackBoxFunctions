@@ -1,7 +1,8 @@
 package org.intellij.sdk.PyTutor;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.intellij.openapi.project.Project;
+
+import java.io.*;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -14,8 +15,9 @@ public class PromptLogging {
     private final String loggingApiUrl;
     private final String loggingApiKey;
     private final String sessionId;
+    private final Project project;
 
-    public PromptLogging() {
+    public PromptLogging(Project project) {
         Properties properties = readPropertiesFromResources();
         this.loggingApiUrl = properties.getProperty(LOGGING_API_URL_PROPERTY);
         this.loggingApiKey = properties.getProperty(LOGGING_API_KEY_PROPERTY);
@@ -23,6 +25,7 @@ public class PromptLogging {
             throw new IllegalStateException("Logging API URL or API key not found in pytutor.properties file");
         }
         this.sessionId = generateSessionId();
+        this.project = project;
     }
 
     public String getSessionId() {
@@ -36,6 +39,7 @@ public class PromptLogging {
     public void logPrompt(String id, String prompt) {
         String requestBody = String.format("{\"EventType\": \"Prompt\", \"AssignmentID\": \"%s\", \"SubjectID\": \"%s\", \"Entry\": \"Prompt\", \"ClientTimestamp\": \"%d\", \"X-Metadata\": \"%s\"}",
                 escapeJson(getSessionId()), escapeJson(id), System.currentTimeMillis(), escapeJson(prompt));
+        appendToLocalLog("Prompt", "", "", "", System.currentTimeMillis(), "", "", "", prompt, "", "", "", id, getSessionId());
         sendLogRequest(requestBody);
     }
 
@@ -92,6 +96,39 @@ public class PromptLogging {
             }
         } catch (IOException | InterruptedException e) {
             System.out.println("Error occurred while logging entry: " + e.getMessage());
+        }
+    }
+
+    private void appendToLocalLog(String eventType, String insertText, String deleteText, String sourceLocation,
+                                  long clientTimestamp, String codeStateSection, String toolInstances,
+                                  String editType, String metadata, String codeStateID, String compilable,
+                                  String eventID, String subjectID, String assignmentID) {
+        String projectBasePath = project.getBasePath();
+        if (projectBasePath != null) {
+            String logFilePath = projectBasePath + "/showyourwork/showyourwork.log";
+            File logFile = new File(logFilePath);
+
+            System.out.println("Project Base Path: " + projectBasePath);
+            System.out.println("Log File Path: " + logFilePath);
+            System.out.println("Log File Exists: " + logFile.exists());
+
+            if (logFile.exists()) {
+                String logEntry = String.format("%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s,%s,%s%n",
+                        eventType, insertText, deleteText, sourceLocation, clientTimestamp, codeStateSection,
+                        toolInstances, editType, escapeJson(metadata), codeStateID, compilable, eventID,
+                        subjectID, assignmentID);
+
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFilePath, true))) {
+                    writer.write(logEntry);
+                    System.out.println("Log entry appended successfully.");
+                } catch (IOException e) {
+                    System.out.println("Error occurred while appending to local log: " + e.getMessage());
+                }
+            } else {
+                System.out.println("Log file does not exist. Skipping local logging.");
+            }
+        } else {
+            System.out.println("Project base path is null. Skipping local logging.");
         }
     }
 

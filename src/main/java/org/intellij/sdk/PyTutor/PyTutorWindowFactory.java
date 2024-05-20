@@ -42,13 +42,13 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
   }
 
   private static class PyTutorWindowContent {
+    private final Project project;
     private final JPanel contentPanel = new JPanel();
     private final JTextArea textArea = new JBTextArea();
     private final JPanel submittedTextPanel = new JPanel(new GridLayout(0, 1, 0, 10));
-    private final PromptLogging promptLogging = new PromptLogging();
-    private final OpenAIClient openAIClient = new OpenAIClient(promptLogging);
-    private final JTextArea statusLabel = new JTextArea();  // Changed from JLabel to JTextArea
-    private final Project project;
+    private final PromptLogging promptLogging;
+    private final OpenAIClient openAIClient;
+    private final JTextArea statusLabel = new JTextArea();
     private final FunctionManager functionManager;
     private final Map<String, String> functionPrompts = new HashMap<>();
     private String currentlyEditingFunctionName = null;
@@ -56,6 +56,8 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
     public PyTutorWindowContent(ToolWindow toolWindow, Project project, FunctionManager functionManager) {
       this.project = project;
       this.functionManager = functionManager;
+      this.promptLogging = new PromptLogging(project);
+      this.openAIClient = new OpenAIClient(promptLogging);
 
       contentPanel.setLayout(new BorderLayout());
       contentPanel.add(createTextBoxPanel(), BorderLayout.NORTH);
