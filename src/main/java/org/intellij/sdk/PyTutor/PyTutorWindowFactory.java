@@ -313,7 +313,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextPanel.setBorder(BorderFactory.createCompoundBorder(
               BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY),
               BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-      submittedTextPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 55)); // Set a maximum height for the panel
+      submittedTextPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60)); // Set a maximum height for the panel
 
       String functionDefinition = text.replace("def ", "");
 
@@ -353,7 +353,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextScrollPane.getViewport().setOpaque(false);
 
       JButton deleteButton = new JButton(AllIcons.Actions.GC);
-      deleteButton.setPreferredSize(new Dimension(30, 42));
+      deleteButton.setPreferredSize(new Dimension(32, 46));
       deleteButton.setMargin(new Insets(0, 0, 0, 0));
       deleteButton.addActionListener(e -> deleteFunction(functionName));
 
