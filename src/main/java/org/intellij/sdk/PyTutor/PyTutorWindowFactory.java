@@ -75,6 +75,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       statusLabel.setWrapStyleWord(true);  // Wrap at word boundaries
       statusLabel.setEditable(false);  // Make the text area non-editable
       statusLabel.setBackground(contentPanel.getBackground());  // Make background match the panel
+      statusLabel.setFont(new Font("Arial", Font.PLAIN, 14));
       contentPanel.add(statusLabel, BorderLayout.SOUTH);
 
       // Load existing function prompts from generated_functions.py
@@ -112,6 +113,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       textArea.setLineWrap(true);
       textArea.setWrapStyleWord(true);
       textArea.setPreferredSize(new Dimension(400, 100));  // Set preferred size
+      textArea.setFont(new Font("Arial", Font.PLAIN, 14));
 
       JBScrollPane scrollPane = new JBScrollPane(textArea);
       scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -364,6 +366,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextArea.setWrapStyleWord(true);
       submittedTextArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
       submittedTextArea.setBackground(null);
+      submittedTextArea.setFont(new Font("Arial", Font.PLAIN, 14));
 
       String prompt = functionPrompts.get(functionName);
       if (prompt != null) {
