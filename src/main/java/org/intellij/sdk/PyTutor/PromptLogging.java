@@ -102,6 +102,9 @@ public class PromptLogging {
         }
     }
 
+    // TODO: This is not probably a good idea, as I have no idea how the local logging is supposed to work and I could be appending info to columns where it isn't supposed to be.
+    // Would probably need to log to a file with a dedicated format for the PyTutor logs rather than just injecting logs
+    // into the SYW log file.
     private void appendToLocalLog(String eventType, String insertText, String deleteText, String sourceLocation,
                                   long clientTimestamp, String codeStateSection, String toolInstances,
                                   String editType, String metadata, String codeStateID, String compilable,
