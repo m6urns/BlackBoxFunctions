@@ -1,5 +1,6 @@
 package org.intellij.sdk.PyTutor;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
@@ -194,10 +195,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
           docArea.setText("Importing your generated functions\n\n" +
                   "You can add your generated functions to your Python code by importing the generated_functions module.\n" +
                   "You can import all of the functions you create by adding the following line to the top of your .py file:\n\n" +
-                  "from generated_functions import *\n\n"+
-                  "Tips for Generating Useful Functions\n\n" +
-                  "Describe the function you wan to generate. Include what data and type of data will be passed to the function, and what the function should return.\n\n" +
-                  "Include a name for the function, for example add_item or remove_item.\n\n");
+                  "from generated_functions import *\n\n");
           docFrame.add(new JScrollPane(docArea), BorderLayout.CENTER);
           docFrame.setSize(750, 200);
           docFrame.setLocationRelativeTo(null);
@@ -347,8 +345,9 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       submittedTextScrollPane.setOpaque(false);
       submittedTextScrollPane.getViewport().setOpaque(false);
 
-      JButton deleteButton = new JButton("X");
-      deleteButton.setPreferredSize(new Dimension(30, 40));
+      // Create the delete button with an icon
+      JButton deleteButton = new JButton(AllIcons.Actions.GC);
+      deleteButton.setPreferredSize(new Dimension(30, 42));
       deleteButton.setMargin(new Insets(0, 0, 0, 0));
       deleteButton.addActionListener(e -> deleteFunction(functionName));
 
