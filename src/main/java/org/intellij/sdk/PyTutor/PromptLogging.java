@@ -76,6 +76,13 @@ public class PromptLogging {
         sendLogRequest(requestBody);
     }
 
+    public void logError(String id, String error) {
+        String requestBody = String.format("{\"EventType\": \"Error\", \"AssignmentID\": \"%s\", \"SubjectID\": \"%s\", \"Entry\": \"Error\", \"ClientTimestamp\": \"%d\", \"X-Metadata\": \"%s\"}",
+                escapeJson(getSessionId()), escapeJson(id), System.currentTimeMillis(), escapeJson(error));
+//        appendToLocalLog("Error", "", "", "", System.currentTimeMillis(), "", "", "", error, "", "", "", id, getSessionId());
+        sendLogRequest(requestBody);
+    }
+
     private void sendLogRequest(String requestBody) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()

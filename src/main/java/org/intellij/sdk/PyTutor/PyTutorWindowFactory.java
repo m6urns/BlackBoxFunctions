@@ -306,6 +306,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
           // Check if a function with the same name already exists
           if (functionPrompts.containsKey(functionName)) {
+            promptLogging.logError(uid, "Function '" + functionName + "' already exists.");
             setStatus("Function '" + functionName + "' already exists. Provide a unique function name in your prompt.");
           } else {
             functionManager.writeToLibrary(project, codeDef, codeContent, prompt, uid);
