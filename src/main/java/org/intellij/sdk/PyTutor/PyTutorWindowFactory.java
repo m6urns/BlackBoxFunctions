@@ -117,8 +117,8 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       textArea.setWrapStyleWord(true);
       textArea.setFont(new Font(FONT_FAMILY, Font.PLAIN, FONT_SIZE));
 
-      // Set the preferred size for the textArea
-      textArea.setPreferredSize(new Dimension(400, 1500));
+      // Don't set the preferred size of the text area, will allow scroll bars to appear as needed
+      //      textArea.setPreferredSize(new Dimension(400, 1500));
 
       JBScrollPane scrollPane = new JBScrollPane(textArea);
       scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
