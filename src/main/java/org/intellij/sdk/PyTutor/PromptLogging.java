@@ -113,6 +113,12 @@ public class PromptLogging {
             System.out.println("Log File Exists: " + logFile.exists());
 
             if (logFile.exists()) {
+                boolean readOnly = !logFile.canWrite();
+                if (readOnly) {
+                    // Make the file writable
+                    logFile.setWritable(true);
+                }
+
                 String logEntry = String.format("%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s,%s,%s%n",
                         eventType, insertText, deleteText, sourceLocation, clientTimestamp, codeStateSection,
                         toolInstances, editType, escapeJson(metadata), codeStateID, compilable, eventID,
@@ -123,6 +129,11 @@ public class PromptLogging {
                     System.out.println("Log entry appended successfully.");
                 } catch (IOException e) {
                     System.out.println("Error occurred while appending to local log: " + e.getMessage());
+                } finally {
+                    if (readOnly) {
+                        // Revert the file permissions to read-only
+                        logFile.setReadOnly();
+                    }
                 }
             } else {
                 System.out.println("Log file does not exist. Skipping local logging.");
