@@ -106,8 +106,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
       String uids = String.join(",", functionUIDs);
       promptLogging.logSession(uids);
     }
-
-
+    
     @NotNull
     private JPanel createTextBoxPanel() {
       JPanel textBoxPanel = new JPanel(new BorderLayout());
@@ -130,8 +129,6 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       return textBoxPanel;
     }
-
-
 
     @NotNull
     private JPanel createControlsPanel(ToolWindow toolWindow) {
@@ -166,7 +163,6 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       return controlsPanel;
     }
-
 
     @NotNull
     private JPanel createSubmittedTextPanel() {
@@ -251,14 +247,14 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
       // Handle the response from OpenAI
       if (rawResponse.startsWith("InvalidPrompt:")) {
-//        String errorMessage = "Error: " + rawResponse;
-        String errorMessage = "Error: Invalid Prompt";
+        String errorMessage = "Error: " + rawResponse;
+//        String errorMessage = "Error: Invalid Prompt";
         System.out.println(errorMessage);
         setStatus(errorMessage);
       } else {
         if (codeDef.isEmpty() && codeContent.isEmpty()) {
-//          String errorMessage = "Error: " + rawResponse;
-          String errorMessage = "Error: Empty Response Received";
+          String errorMessage = "Error: " + rawResponse;
+//          String errorMessage = "Error: Empty Response Received";
           System.out.println(errorMessage);
           setStatus(errorMessage);
         } else {
@@ -281,6 +277,11 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 
     public void setStatus(String status) {
       statusLabel.setText(status);
+
+      // Set a timer to clear the status after 5 seconds (5000 milliseconds)
+      Timer timer = new Timer(7500, e -> statusLabel.setText(""));
+      timer.setRepeats(false);  // Only execute once
+      timer.start();
     }
 
     private void deleteFunction(String functionName) {
