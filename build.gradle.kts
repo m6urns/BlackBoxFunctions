@@ -3,6 +3,7 @@
 plugins {
   id("java")
   id("org.jetbrains.intellij") version "1.17.3"
+  id("org.openjfx.javafxplugin") version "0.0.13"
 }
 
 group = "org.intellij.sdk"
@@ -14,6 +15,9 @@ repositories {
 
 dependencies {
   implementation("io.github.sashirestela:simple-openai:2.3.2")
+  implementation("org.openjfx:javafx-controls:17.0.1")
+  implementation("org.openjfx:javafx-swing:17.0.1")
+  implementation("org.openjfx:javafx-web:17.0.1")
 }
 
 java {
@@ -37,4 +41,10 @@ tasks {
     sinceBuild.set("241")
     untilBuild.set("241.*")
   }
+}
+
+// JavaFX configuration
+javafx {
+  version = "17.0.1"
+  modules = listOf("javafx.controls", "javafx.swing", "javafx.web")
 }
