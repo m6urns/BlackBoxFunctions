@@ -3,7 +3,7 @@
 plugins {
   id("java")
   id("org.jetbrains.intellij") version "1.17.3"
-  id("org.openjfx.javafxplugin") version "0.0.13"
+  id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
 group = "org.intellij.sdk"

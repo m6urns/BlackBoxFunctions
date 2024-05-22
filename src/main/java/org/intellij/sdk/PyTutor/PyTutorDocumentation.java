@@ -37,7 +37,7 @@ public class PyTutorDocumentation {
                 // Create a JFXPanel to hold the JavaFX content
                 JFXPanel fxPanel = new JFXPanel();
                 docFrame.add(fxPanel, BorderLayout.CENTER);
-                docFrame.setSize(800, 600); // Adjust the size as needed
+                docFrame.setSize(1280, 720);
                 docFrame.setLocationRelativeTo(null);
                 docFrame.setVisible(true);
 
