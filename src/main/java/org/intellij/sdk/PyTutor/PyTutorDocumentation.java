@@ -34,13 +34,14 @@ public class PyTutorDocumentation {
                 JTextPane textPane = new JTextPane();
                 textPane.setEditable(false);
                 textPane.setContentType("text/html");
-                textPane.setFont(new Font(FONT_FAMILY, Font.PLAIN, FONT_SIZE));
 
-                String htmlContent = "Importing your generated functions<br><br>" +
+                String htmlContent = "<html><body style='font-family: " + FONT_FAMILY + "; font-size: " + FONT_SIZE + "pt;'>" +
+                        "Importing your generated functions<br><br>" +
                         "You can add your generated functions to your Python code by importing the generated_functions module.<br>" +
                         "You can import all of the functions you create by adding the following line to the top of your .py file:<br><br>" +
                         "from generated_functions import *<br><br>" +
-                        "For a demo of PyTutor, please click <a href=\"https://usu-my.sharepoint.com/:v:/g/personal/a02398138_aggies_usu_edu/EY-4KYK2hnZGusECcESykcsBl1bPYocCxFs5062e4Oiobg?e=YgcyVp&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D\">here</a>.";
+                        "For a demo of PyTutor, please click <a href=\"https://usu-my.sharepoint.com/:v:/g/personal/a02398138_aggies_usu_edu/EY-4KYK2hnZGusECcESykcsBl1bPYocCxFs5062e4Oiobg?e=YgcyVp&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D\">here</a>." +
+                        "</body></html>";
 
                 textPane.setText(htmlContent);
 
