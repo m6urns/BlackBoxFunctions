@@ -138,7 +138,7 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
         String text = textArea.getText();
         System.out.println("Prompt: " + text);
         sendPromptToOpenAI(text);
-        textArea.setText("");
+//        textArea.setText("");
         currentlyEditingFunctionName = null;
       });
       buttonsPanel.add(submitButton);
@@ -197,25 +197,28 @@ final class PyTutorWindowFactory implements ToolWindowFactory, DumbAware {
 //        String errorMessage = "Error: Invalid Prompt";
         System.out.println(errorMessage);
         setStatus(errorMessage);
+        textArea.setText("");
       } else {
         if (codeDef.isEmpty() && codeContent.isEmpty()) {
           String errorMessage = "Error: " + rawResponse;
 //          String errorMessage = "Error: Empty Response Received";
           System.out.println(errorMessage);
           setStatus(errorMessage);
+          textArea.setText("prompt");
         } else {
           String functionName = functionManager.returnFunctionName(codeDef);
-          System.out.println("Function name: " + functionName);
-
+//          System.out.println("Function name: " + functionName);
           // Check if a function with the same name already exists
           if (functionPrompts.containsKey(functionName)) {
             promptLogging.logError(uid, "Function '" + functionName + "' already exists.");
             setStatus("Function '" + functionName + "' already exists. Provide a unique function name in your prompt.");
+            textArea.setText(prompt);
           } else {
             functionManager.writeToLibrary(project, codeDef, codeContent, prompt, uid);
             functionPrompts.put(functionName, prompt);
             addSubmittedTextBox(codeDef, functionName);
             setStatus("Function '" + functionName + "' added successfully.");
+            textArea.setText("");
           }
         }
       }

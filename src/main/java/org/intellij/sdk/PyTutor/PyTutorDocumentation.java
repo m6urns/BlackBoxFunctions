@@ -6,13 +6,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Scene;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.net.URI;
 
 public class PyTutorDocumentation {
     private static final Integer FONT_SIZE = 14;
@@ -32,26 +28,19 @@ public class PyTutorDocumentation {
             @Override
             public void mouseClicked(MouseEvent e) {
                 promptLogging.logInteraction("Clicked help link");
-                JFrame docFrame = new JFrame("Using the PyTutor Plugin");
-
-                // Create a JFXPanel to hold the JavaFX content
-                JFXPanel fxPanel = new JFXPanel();
-                docFrame.add(fxPanel, BorderLayout.CENTER);
-                docFrame.setSize(1280, 720);
-                docFrame.setLocationRelativeTo(null);
-                docFrame.setVisible(true);
-
-                // Initialize JavaFX
-                Platform.runLater(() -> {
-                    WebView webView = new WebView();
-                    WebEngine webEngine = webView.getEngine();
-                    webEngine.load("https://www.youtube.com/embed/kVae2hmGdS0");
-
-                    Scene scene = new Scene(webView);
-                    fxPanel.setScene(scene);
-                });
+                try {
+                    URI uri = new URI("https://www.youtube-nocookie.com/embed/kVae2hmGdS0?si=kuSsVbIkmFmDX1ec");
+                    if (Desktop.isDesktopSupported()) {
+                        Desktop.getDesktop().browse(uri);
+                    } else {
+                        System.err.println("Desktop not supported. Cannot open the URL.");
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
+
 
         JLabel copyLabel = new JLabel("<html><u>Copy import statement to clipboard</u></html>");
         copyLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

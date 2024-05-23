@@ -15,9 +15,10 @@ repositories {
 
 dependencies {
   implementation("io.github.sashirestela:simple-openai:2.3.2")
-  implementation("org.openjfx:javafx-controls:17.0.1")
-  implementation("org.openjfx:javafx-swing:17.0.1")
-  implementation("org.openjfx:javafx-web:17.0.1")
+//  implementation("org.openjfx:javafx-controls:17.0.1")
+//  implementation("org.openjfx:javafx-swing:17.0.1")
+//  implementation("org.openjfx:javafx-web:17.0.1")
+//  implementation("org.openjfx:javafx-media:17.0.2")
 }
 
 java {
@@ -44,7 +45,7 @@ tasks {
 }
 
 // JavaFX configuration
-javafx {
-  version = "17.0.1"
-  modules = listOf("javafx.controls", "javafx.swing", "javafx.web")
-}
+//javafx {
+//  version = "17.0.1"
+//  modules = listOf("javafx.controls", "javafx.swing", "javafx.web", "javafx.media")
+//}
