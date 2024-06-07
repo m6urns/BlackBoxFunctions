@@ -24,6 +24,7 @@
   <change-notes>
     <![CDATA[
       <ul>
+        <li><b>1.0.2</b> Add custom icon</li>
         <li><b>1.0.1</b> Update target to PyCharm only</li>
         <li><b>1.0.0</b> UI refinements, initial public release</li>
         <li><b>0.0.2</b> Compilation implemented</li>
@@ -36,8 +37,11 @@
   <vendor url="https://edwardsjohnmartin.github.io/people/index.html">EdwardsLab</vendor>
 
   <extensions defaultExtensionNs="com.intellij">
-    <toolWindow id="BlackBoxFunctions" secondary="true" icon="AllIcons.Toolwindows.ToolWindowStructure" anchor="right"
+    <toolWindow id="BlackBoxFunctions" secondary="true" icon="/icons/pluginIcon.svg" anchor="right"
                 factoryClass="org.intellij.sdk.BlackBoxFunctions.BBFWindowFactory"/>
+<!--    <toolWindow id="BlackBoxFunctions" secondary="true" icon="AllIcons.Toolwindows.ToolWindowStructure" anchor="right"-->
+<!--                factoryClass="org.intellij.sdk.BlackBoxFunctions.BBFWindowFactory"/>-->
+<!--    icon="/icons/myAction.svg"-->
   </extensions>
 
 </idea-plugin>
