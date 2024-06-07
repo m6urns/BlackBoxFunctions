@@ -1,5 +1,5 @@
 // Based on implementation by Wesley Edwards: https://github.com/WesleyEdwards/PyTutor
-package org.intellij.sdk.PyTutor;
+package org.intellij.sdk.BlackBoxFunctions;
 
 import io.github.sashirestela.openai.BaseSimpleOpenAI;
 import io.github.sashirestela.openai.SimpleOpenAI;

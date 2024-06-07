@@ -4,7 +4,7 @@
 <idea-plugin>
 
   <!-- Unique id for this plugin. Must stay constant for the life of the plugin. -->
-  <id>org.intellij.sdk.PyTutor</id>
+  <id>org.intellij.sdk.BlackBoxFunctions</id>
 
   <!-- Text to display as name on Settings | Plugin page -->
   <name>PyTutor</name>
@@ -34,8 +34,8 @@
   <vendor url="https://plugins.jetbrains.com">IntelliJ Platform SDK</vendor>
 
   <extensions defaultExtensionNs="com.intellij">
-    <toolWindow id="PyTutor" secondary="true" icon="AllIcons.Toolwindows.WebToolWindow" anchor="right"
-                factoryClass="org.intellij.sdk.PyTutor.PyTutorWindowFactory"/>
+    <toolWindow id="BlackBoxFunctions" secondary="true" icon="AllIcons.Toolwindows.WebToolWindow" anchor="right"
+                factoryClass="org.intellij.sdk.BlackBoxFunctions.PyTutorWindowFactory"/>
   </extensions>
 
 </idea-plugin>

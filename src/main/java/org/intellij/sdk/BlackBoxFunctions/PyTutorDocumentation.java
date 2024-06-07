@@ -1,4 +1,4 @@
-package org.intellij.sdk.PyTutor;
+package org.intellij.sdk.BlackBoxFunctions;
 
 import javax.swing.*;
 import java.awt.*;

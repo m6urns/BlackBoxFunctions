@@ -1,4 +1,4 @@
-package org.intellij.sdk.PyTutor;
+package org.intellij.sdk.BlackBoxFunctions;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.DumbAware;
