@@ -39,9 +39,6 @@
   <extensions defaultExtensionNs="com.intellij">
     <toolWindow id="BlackBoxFunctions" secondary="true" icon="/icons/pluginIcon.svg" anchor="right"
                 factoryClass="org.intellij.sdk.BlackBoxFunctions.BBFWindowFactory"/>
-<!--    <toolWindow id="BlackBoxFunctions" secondary="true" icon="AllIcons.Toolwindows.ToolWindowStructure" anchor="right"-->
-<!--                factoryClass="org.intellij.sdk.BlackBoxFunctions.BBFWindowFactory"/>-->
-<!--    icon="/icons/myAction.svg"-->
   </extensions>
 
 </idea-plugin>
