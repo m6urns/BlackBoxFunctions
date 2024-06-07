@@ -4,7 +4,7 @@
 <idea-plugin>
 
   <!-- Unique id for this plugin. Must stay constant for the life of the plugin. -->
-  <id>org.intellij.sdk.BlackBoxFunctions</id>
+  <id>BlackBoxFunctions</id>
 
   <!-- Text to display as name on Settings | Plugin page -->
   <name>BlackBoxFunctions</name>
