@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "org.intellij.sdk"
-version = "0.0.2"
+version = "1.0.0"
 
 repositories {
   mavenCentral()
@@ -15,10 +15,6 @@ repositories {
 
 dependencies {
   implementation("io.github.sashirestela:simple-openai:2.3.2")
-//  implementation("org.openjfx:javafx-controls:17.0.1")
-//  implementation("org.openjfx:javafx-swing:17.0.1")
-//  implementation("org.openjfx:javafx-web:17.0.1")
-//  implementation("org.openjfx:javafx-media:17.0.2")
 }
 
 java {
@@ -43,9 +39,3 @@ tasks {
     untilBuild.set("241.*")
   }
 }
-
-// JavaFX configuration
-//javafx {
-//  version = "17.0.1"
-//  modules = listOf("javafx.controls", "javafx.swing", "javafx.web", "javafx.media")
-//}

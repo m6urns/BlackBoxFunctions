@@ -16,22 +16,23 @@
   <description>
     <![CDATA[
       BlackBoxFunctions<br>
-      See the
-      <a href="https://plugins.jetbrains.com/docs/intellij/tool-windows.html">Tool Windows</a>
+      See
+        <a href="https://edwardsjohnmartin.github.io/people/index.html">EdwardsLab</a>
       for more information.
     ]]>
   </description>
   <change-notes>
     <![CDATA[
       <ul>
-        <li><b>0.0.2</b>Compilation implemented</li>
-        <li><b>0.0.1</b>Initial Build</li>
+        <li><b>1.0.0</b> UI refinements, initial public release</li>
+        <li><b>0.0.2</b> Compilation implemented</li>
+        <li><b>0.0.1</b> Initial Build</li>
       </ul>
     ]]>
   </change-notes>
 
   <!-- Text to display as company information on Settings | Plugin page -->
-  <vendor url="https://plugins.jetbrains.com">IntelliJ Platform SDK</vendor>
+  <vendor url="https://edwardsjohnmartin.github.io/people/index.html">EdwardsLab</vendor>
 
   <extensions defaultExtensionNs="com.intellij">
     <toolWindow id="BlackBoxFunctions" secondary="true" icon="AllIcons.Toolwindows.WebToolWindow" anchor="right"
