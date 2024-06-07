@@ -7,7 +7,7 @@
   <id>org.intellij.sdk.BlackBoxFunctions</id>
 
   <!-- Text to display as name on Settings | Plugin page -->
-  <name>PyTutor</name>
+  <name>BlackBoxFunctions</name>
 
   <!-- Indicate this plugin can be loaded in all IntelliJ Platform-based products. -->
   <depends>com.intellij.modules.platform</depends>
@@ -15,7 +15,7 @@
   <!-- Text to display as description on Settings | Plugin page -->
   <description>
     <![CDATA[
-      PyTutor<br>
+      BlackBoxFunctions<br>
       See the
       <a href="https://plugins.jetbrains.com/docs/intellij/tool-windows.html">Tool Windows</a>
       for more information.

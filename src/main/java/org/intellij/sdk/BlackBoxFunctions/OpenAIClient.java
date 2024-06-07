@@ -128,18 +128,18 @@ public class OpenAIClient {
     }
 
     private String readApiKeyFromResources() {
-        try (InputStream inputStream = getClass().getResourceAsStream("/pytutor.properties")) {
+        try (InputStream inputStream = getClass().getResourceAsStream("/bbf.properties")) {
             Properties properties = new Properties();
             properties.load(inputStream);
             String apiKey = properties.getProperty("OPENAI_API_KEY");
             if (apiKey != null && !apiKey.isEmpty()) {
-//                System.out.println("API key found in pytutor.properties file: " + apiKey);
+//                System.out.println("API key found in bbf.properties file: " + apiKey);
                 return apiKey;
             } else {
-                throw new IllegalStateException("API key not found in pytutor.properties file");
+                throw new IllegalStateException("API key not found in bbf.properties file");
             }
         } catch (IOException e) {
-            throw new IllegalStateException("Error reading pytutor.properties file", e);
+            throw new IllegalStateException("Error reading bbf.properties file", e);
         }
     }
 }

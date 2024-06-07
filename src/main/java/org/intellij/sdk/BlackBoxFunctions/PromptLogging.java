@@ -22,7 +22,7 @@ public class PromptLogging {
         this.loggingApiUrl = properties.getProperty(LOGGING_API_URL_PROPERTY);
         this.loggingApiKey = properties.getProperty(LOGGING_API_KEY_PROPERTY);
         if (loggingApiUrl == null || loggingApiUrl.isEmpty() || loggingApiKey == null || loggingApiKey.isEmpty()) {
-            throw new IllegalStateException("Logging API URL or API key not found in pytutor.properties file");
+            throw new IllegalStateException("Logging API URL or API key not found in bbf.properties file");
         }
         this.sessionId = generateSessionId();
         this.project = project;
@@ -165,12 +165,12 @@ public class PromptLogging {
     }
 
     private Properties readPropertiesFromResources() {
-        try (InputStream inputStream = getClass().getResourceAsStream("/pytutor.properties")) {
+        try (InputStream inputStream = getClass().getResourceAsStream("/bbf.properties")) {
             Properties properties = new Properties();
             properties.load(inputStream);
             return properties;
         } catch (IOException e) {
-            throw new IllegalStateException("Error reading pytutor.properties file", e);
+            throw new IllegalStateException("Error reading bbf.properties file", e);
         }
     }
 }
