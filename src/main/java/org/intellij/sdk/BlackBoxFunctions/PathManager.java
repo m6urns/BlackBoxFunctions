@@ -17,12 +17,12 @@ import java.nio.file.Paths;
 
 public class PathManager {
     public static final String FUNCTION_MANAGER_FILE_NAME = "generated_functions.py";
-    public static final String PLUGIN_DIR_NAME = ".pytutor";
+    public static final String PLUGIN_DIR_NAME = ".blackbox_functions";
 
     public static Path getPluginDirPath(Project project) {
-        VirtualFile baseDir = project.getBaseDir();
-        if (baseDir != null) {
-            return Paths.get(baseDir.getPath(), PLUGIN_DIR_NAME);
+        String basePath = project.getBasePath();
+        if (basePath != null) {
+            return Paths.get(basePath, PLUGIN_DIR_NAME);
         } else {
             throw new IllegalStateException("Project base directory not found for project: " + project.getName());
         }
