@@ -69,15 +69,15 @@ public class FunctionManager implements RunManagerListener {
         }
     }
 
-    @Override
-    public void runConfigurationAdded(@NotNull RunnerAndConfigurationSettings settings) {
-        PathManager.updatePythonPath(settings);
-    }
+//    @Override
+//    public void runConfigurationAdded(@NotNull RunnerAndConfigurationSettings settings) {
+//        PathManager.updatePythonPath(settings);
+//    }
 
-    @Override
-    public void runConfigurationChanged(@NotNull RunnerAndConfigurationSettings settings) {
-        PathManager.updatePythonPath(settings);
-    }
+//    @Override
+//    public void runConfigurationChanged(@NotNull RunnerAndConfigurationSettings settings) {
+//        PathManager.updatePythonPath(settings);
+//    }
 
     public static void registerProjectListener() {
         ApplicationManager.getApplication().getMessageBus().connect().subscribe(com.intellij.openapi.project.ProjectManager.TOPIC, new com.intellij.openapi.project.ProjectManagerListener() {

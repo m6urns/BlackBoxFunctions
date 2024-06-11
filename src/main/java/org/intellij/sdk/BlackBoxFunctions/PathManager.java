@@ -7,9 +7,9 @@ import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.jetbrains.python.run.PythonRunConfiguration;
-import org.jetbrains.annotations.NotNull;
-import com.intellij.execution.RunnerAndConfigurationSettings;
+//import com.jetbrains.python.run.PythonRunConfiguration;
+//import org.jetbrains.annotations.NotNull;
+//import com.intellij.execution.RunnerAndConfigurationSettings;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -59,15 +59,15 @@ public class PathManager {
         }
     }
 
-    public static void updatePythonPath(@NotNull RunnerAndConfigurationSettings settings) {
-        if (settings.getConfiguration() instanceof PythonRunConfiguration configuration) {
-            String pytutorPath = getPluginDirPath(configuration.getProject()).toString();
-            String currentPythonPath = configuration.getEnvs().getOrDefault("PYTHONPATH", "");
-            if (!currentPythonPath.contains(pytutorPath)) {
-                configuration.getEnvs().put("PYTHONPATH", currentPythonPath + java.io.File.pathSeparator + pytutorPath);
-            }
-        }
-    }
+//    public static void updatePythonPath(@NotNull RunnerAndConfigurationSettings settings) {
+//        if (settings.getConfiguration() instanceof PythonRunConfiguration configuration) {
+//            String pytutorPath = getPluginDirPath(configuration.getProject()).toString();
+//            String currentPythonPath = configuration.getEnvs().getOrDefault("PYTHONPATH", "");
+//            if (!currentPythonPath.contains(pytutorPath)) {
+//                configuration.getEnvs().put("PYTHONPATH", currentPythonPath + java.io.File.pathSeparator + pytutorPath);
+//            }
+//        }
+//    }
 
     public static Sdk getCurrentPythonSdk(Project project) {
         return ProjectRootManager.getInstance(project).getProjectSdk();
