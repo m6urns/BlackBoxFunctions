@@ -15,10 +15,7 @@
   <!-- Text to display as description on Settings | Plugin page -->
   <description>
     <![CDATA[
-      BlackBoxFunctions<br>
-      See
-        <a href="https://edwardsjohnmartin.github.io/people/index.html">EdwardsLab</a>
-      for more information.
+      BlackBoxFunctions is a PyCharm plugin created by Utah State University to assist students in practicing problem decomposition. Function creation events are recorded to allow researchers to study the decomposition process.
     ]]>
   </description>
   <change-notes>
