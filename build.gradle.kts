@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "org.intellij.sdk"
-version = "1.0.3"
+version = "1.0.4"
 
 repositories {
   mavenCentral()
@@ -24,7 +24,7 @@ java {
 // See https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
   type.set("PC")
-  version.set("2024.1.2")
+  version.set("2024.1.4")
   plugins.add("python-ce")
 }
 
@@ -36,6 +36,6 @@ tasks {
   patchPluginXml {
     version.set("${project.version}")
     sinceBuild.set("241")
-    untilBuild.set("241.*")
+    untilBuild.set("242.*")
   }
 }
